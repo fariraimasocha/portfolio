@@ -1,11 +1,18 @@
 import React from 'react'
-import { getPostBySlug } from '@/lib/posts'
+import { getPostBySlug, getPosts } from '@/lib/posts'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeftIcon } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import MDXContent from '@/components/mdx-content'
+
+export async function generateStaticParams() {
+    const posts = await getPosts()
+    const slugs = posts.map(post => ({ slug: post.slug }))
+
+    return slugs
+}
 
 
 export default async function Post({ params }: { params: { slug: string } }) {
@@ -49,7 +56,7 @@ export default async function Post({ params }: { params: { slug: string } }) {
                 </header>
 
                 <main className='prose mt-16 dark:prose-invert'>
-                    <MDXRemote source={content} />
+                    <MDXContent source={content} />
                 </main>
 
             </div>
