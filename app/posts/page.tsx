@@ -1,6 +1,5 @@
 import React from 'react'
 import { getPosts } from '@/lib/posts'
-import Posts from '@/components/posts'
 import PostsWithSearch from '@/components/post-with-search'
 
 

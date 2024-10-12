@@ -24,7 +24,7 @@ export default async function Post({ params }: { params: { slug: string } }) {
     }
 
     const { metadata, content } = post
-    const { title, summary, image, author, publishedAt } = metadata
+    const { title, image, author, publishedAt } = metadata
 
     return (
         <section className='pb-24 pt-32'>
