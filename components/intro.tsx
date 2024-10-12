@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import authorImage from '@/public/images/authors/farirai.jpeg'
+import { Button } from '@/components/ui/button'
 
 export default function Intro() {
     return (
@@ -11,6 +12,11 @@ export default function Intro() {
                     passionate about learning new technologies and sharing knowledge with
                     others.
                 </p>
+                <Button
+                    type='submit'
+                    className='mt-5 disabled:opacity-50'
+                >
+                    Download CV</Button>
             </div>
             <div className='relative'>
                 <Image
