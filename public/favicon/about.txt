@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Agdasima
+- Font Author: Copyright 2023 The Agdasima Project Authors (https://github.com/docrepair-fonts/agdasima-fonts).
+- Font Source: https://fonts.gstatic.com/s/agdasima/v4/PN_zRfyxp2f1fUCgAMg6rzjb_-Da.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))
