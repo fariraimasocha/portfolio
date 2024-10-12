@@ -2,6 +2,8 @@ import Image from 'next/image'
 import authorImage from '@/public/images/authors/farirai.jpeg'
 import { Button } from '@/components/ui/button'
 
+
+
 export default function Intro() {
     return (
         <section className='flex flex-col-reverse items-start gap-x-10 gap-y-4 pb-24 md:flex-row md:items-center'>
@@ -13,10 +15,11 @@ export default function Intro() {
                     others.
                 </p>
                 <Button
-                    type='submit'
+                    asChild
                     className='mt-5 disabled:opacity-50'
                 >
-                    Download CV</Button>
+                    <a href='/resume/FariraiJMasocha_SD_4YoE.pdf' target='_blank'>Download CV</a>
+                </Button>
             </div>
             <div className='relative'>
                 <Image
