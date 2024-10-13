@@ -16,10 +16,10 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: 'fariraimasocha',
-  description: 'A portfio showcasing some of my work',
+  description: 'A portfolio showcasing some of my work',
   openGraph: {
-    images: '/images/meta/preview.png',
-  },
+    images: '/images/meta/preview.png'
+  }
 }
 
 export default function RootLayout({
