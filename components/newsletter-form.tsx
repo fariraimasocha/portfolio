@@ -28,15 +28,21 @@ export default function NewsletterForm() {
     })
 
     const processForm: SubmitHandler<Inputs> = async data => {
-        const result = await subscribe(data)
+        try {
+            const result = await subscribe(data)
 
-        if (result?.error) {
-            toast.error('An error occurred! Please try again.')
-            return
+            if ('error' in result) {
+                console.error('Subscription error:', result.error)
+                toast.error(result.error)
+                return
+            }
+
+            toast.success('Subscribed successfully!')
+            reset()
+        } catch (error) {
+            console.error('Unexpected error:', error)
+            toast.error('An unexpected error occurred. Please try again later.')
         }
-
-        toast.success('Subscribed successfully!')
-        reset()
     }
 
     return (

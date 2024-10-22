@@ -42,24 +42,46 @@ export async function subscribe(data: NewsletterFormInputs) {
     const result = NewsletterFormSchema.safeParse(data)
 
     if (result.error) {
-        return { error: result.error.format() }
+        return { error: 'Invalid input data' }
+    }
+
+    const audienceId = process.env.RESEND_AUDIENCE_ID
+
+    if (!audienceId) {
+        console.error('RESEND_AUDIENCE_ID is not set')
+        return { error: 'Server configuration error. Please contact support.' }
     }
 
     try {
         const { email } = result.data
-        const { data, error } = await resend.contacts.create({
+        const { data: resendData, error } = await resend.contacts.create({
             email: email,
-            audienceId: process.env.RESEND_AUDIENCE_ID as string
+            audienceId: audienceId
         })
 
-        if (!data || error) {
-            throw new Error('Failed to subscribe')
+        if (error) {
+            console.error('Resend API error:', error)
+            if ('statusCode' in error && error.statusCode === 422) {
+                return { error: 'Invalid audience ID. Please check your configuration.' }
+            }
+            return { error: 'Failed to subscribe. Please try again.' }
         }
 
-        // TODO: Send a welcome email
+        // Send a welcome email
+        const { data: emailData, error: emailError } = await resend.emails.send({
+            from: 'Farirai Masocha <onboarding@resend.dev>',
+            to: email,
+            subject: 'Welcome to our newsletter!',
+            html: '<p>Thank you for subscribing to our newsletter!</p>'
+        })
+
+        if (emailError) {
+            console.error('Welcome email error:', emailError)
+        }
 
         return { success: true }
     } catch (error) {
-        return { error }
+        console.error('Subscription error:', error)
+        return { error: 'An unexpected error occurred. Please try again later.' }
     }
 }
