@@ -54,7 +54,7 @@ export async function subscribe(data: NewsletterFormInputs) {
 
     try {
         const { email } = result.data
-        const { data: resendData, error } = await resend.contacts.create({
+        const { error } = await resend.contacts.create({
             email: email,
             audienceId: audienceId
         })
@@ -68,7 +68,7 @@ export async function subscribe(data: NewsletterFormInputs) {
         }
 
         // Send a welcome email
-        const { data: emailData, error: emailError } = await resend.emails.send({
+        const { error: emailError } = await resend.emails.send({
             from: 'Farirai Masocha <onboarding@resend.dev>',
             to: email,
             subject: 'Welcome to our newsletter!',
