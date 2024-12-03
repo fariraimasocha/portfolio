@@ -18,7 +18,7 @@ export default function Intro() {
                     asChild
                     className='mt-5 disabled:opacity-50'
                 >
-                    <a href='/resume/FariraiJMasocha_SD_4YoE.pdf' target='_blank'>Download CV</a>
+                    <a href='/resume/FariraiMasocha.pdf' target='_blank'>Download CV</a>
                 </Button>
             </div>
             <div className='relative'>
