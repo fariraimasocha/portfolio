@@ -20,12 +20,13 @@ export async function sendEmail(data: z.infer<typeof ContactFormSchema>) {
             from: 'Contact Form <onboarding@resend.dev>',
             to: process.env.EMAIL_TO as string,
             subject: `New message from ${name}`,
-            reply_to: email,
+            replyTo: email,
             text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
         })
 
         return { success: true }
     } catch (error) {
+        console.error('Failed to send email:', error)
         return { error: 'Failed to send email' }
     }
 }
