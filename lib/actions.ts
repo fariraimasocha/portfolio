@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { Resend } from 'resend'
 import { ContactFormSchema, NewsletterFormSchema } from '@/lib/schemas'
 import ContactFormEmail from '@/emails/contact-form-email'
-
+import WelcomeEmail from '@/emails/welcome-email'
 
 type ContactFormInputs = z.infer<typeof ContactFormSchema>
 type NewsletterFormInputs = z.infer<typeof NewsletterFormSchema>
@@ -42,41 +42,48 @@ export async function subscribe(data: NewsletterFormInputs) {
     const result = NewsletterFormSchema.safeParse(data)
 
     if (result.error) {
-        return { error: 'Invalid input data' }
+        return { error: 'Invalid email address provided.' }
     }
 
     const audienceId = process.env.RESEND_AUDIENCE_ID
 
     if (!audienceId) {
         console.error('RESEND_AUDIENCE_ID is not set')
-        return { error: 'Server configuration error. Please contact support.' }
+        return { error: 'Newsletter subscription is temporarily unavailable.' }
     }
 
     try {
         const { email } = result.data
-        const { error } = await resend.contacts.create({
-            email: email,
-            audienceId: audienceId
+        
+        // Add contact to audience
+        const { error: contactError } = await resend.contacts.create({
+            email,
+            audienceId,
+            unsubscribed: false,
         })
 
-        if (error) {
-            console.error('Resend API error:', error)
-            if ('statusCode' in error && error.statusCode === 422) {
-                return { error: 'Invalid audience ID. Please check your configuration.' }
+        if (contactError) {
+            console.error('Resend API error:', contactError)
+            if ('statusCode' in contactError && contactError.statusCode === 422) {
+                if (contactError.message?.toLowerCase().includes('already exists')) {
+                    return { error: 'You are already subscribed to the newsletter!' }
+                }
+                return { error: 'Invalid subscription request. Please try again.' }
             }
-            return { error: 'Failed to subscribe. Please try again.' }
+            return { error: 'Failed to subscribe. Please try again later.' }
         }
 
-        // Send a welcome email
+        // Send welcome email
         const { error: emailError } = await resend.emails.send({
-            from: 'Farirai Masocha <onboarding@resend.dev>',
+            from: 'Farirai Masocha <fariraimasocha@gmail.com>',
             to: email,
-            subject: 'Welcome to our newsletter!',
-            html: '<p>Thank you for subscribing to our newsletter!</p>'
+            subject: 'Welcome to my newsletter!',
+            react: WelcomeEmail()
         })
 
         if (emailError) {
             console.error('Welcome email error:', emailError)
+            // Don't return error since the subscription was successful
         }
 
         return { success: true }
