@@ -27,7 +27,7 @@ export default function ContactForm() {
         }
     })
 
-    const processForm: SubmitHandler<Inputs> = async data => {
+    const processForm: SubmitHandler<Inputs> = async () => {
         // For now, just show success toast without sending data
         toast.success('Message sent successfully!')
         reset()
