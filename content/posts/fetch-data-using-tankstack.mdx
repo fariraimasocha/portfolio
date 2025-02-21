@@ -1,0 +1,116 @@
+---
+title: 'Mastering Data Fetching with TanStack Query'
+summary:
+  'Learn how TanStack Query simplifies data management in React applications'
+image: '/images/posts/tanstack.jpeg'
+author: 'Farirai Masocha'
+publishedAt: '2025-02-21'
+---
+
+# Revolutionize Your Data Fetching with TanStack Query
+
+In modern web development, efficient data fetching and state management are
+crucial for building responsive applications. TanStack Query (formerly React
+Query) has emerged as a powerful solution that simplifies these challenges.
+Let's explore why it's becoming the go-to choice for developers.
+
+## Key Benefits of TanStack Query
+
+### 1. Automatic Background Updates
+
+- **Real-time Data Sync**: Keeps your UI in sync with server data
+- **Smart Refetching**: Automatically refreshes data when windows are refocused
+- **Configurable Polling**: Easy setup for periodic data updates
+
+### 2. Built-in Cache Management
+
+```javascript
+const { data, isLoading } = useQuery({
+  queryKey: ['todos'],
+  queryFn: fetchTodos,
+  staleTime: 5000, // Data stays fresh for 5 seconds
+  cacheTime: 300000 // Cache persists for 5 minutes
+})
+```
+
+### 3. Loading & Error States
+
+TanStack Query provides built-in states that make handling different data
+scenarios straightforward:
+
+```javascript
+const { isLoading, error, data } = useQuery({
+  queryKey: ['userData'],
+  queryFn: fetchUserData
+})
+
+if (isLoading) return <Loading />
+if (error) return <Error message={error.message} />
+return <UserProfile data={data} />
+```
+
+### 4. Parallel Queries
+
+Fetch multiple data sources simultaneously without complexity:
+
+```javascript
+const { data: users } = useQuery({ queryKey: ['users'], queryFn: getUsers })
+const { data: projects } = useQuery({
+  queryKey: ['projects'],
+  queryFn: getProjects
+})
+```
+
+### 5. Data Mutations Made Simple
+
+Updating server data is seamless with mutations:
+
+```javascript
+const mutation = useMutation({
+  mutationFn: newTodo => {
+    return axios.post('/todos', newTodo)
+  },
+  onSuccess: () => {
+    // Invalidate and refetch
+    queryClient.invalidateQueries({ queryKey: ['todos'] })
+  }
+})
+```
+
+## Why Choose TanStack Query?
+
+1. **Reduced Boilerplate**: No more complex reducer logic or manual cache
+   management
+2. **Performance Optimizations**: Built-in request deduplication and caching
+3. **DevTools Integration**: Powerful debugging tools for monitoring queries
+4. **Framework Agnostic**: Works with React, Vue, Solid, and other frameworks
+5. **TypeScript Support**: Excellent type safety out of the box
+
+## Getting Started
+
+```javascript
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <YourApp />
+    </QueryClientProvider>
+  )
+}
+```
+
+## Conclusion
+
+TanStack Query revolutionizes data fetching in modern applications by providing
+an elegant, powerful API that handles complex data-fetching scenarios with ease.
+Its smart defaults and configuration options make it suitable for both simple
+and complex applications.
+
+Whether you're building a small project or a large-scale application, TanStack
+Query's features can significantly improve your development experience and
+application performance.
+
+[Learn more about TanStack Query](https://tanstack.com)
