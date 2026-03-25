@@ -1,0 +1,66 @@
+---
+title: 'Building FitMyCV: How I Built an AI-Powered CV Tailoring Tool'
+summary: The story behind FitMyCV — why I built it, the technical decisions, and how AI can turn a 3.5-hour task into 47 seconds.
+image: /images/projects/fitmycv.png
+author: 'Farirai Masocha'
+publishedAt: '2026-03-25'
+---
+
+# Building FitMyCV: How I Built an AI-Powered CV Tailoring Tool
+
+I've applied to hundreds of jobs. And like most people, I used to send the same CV every time. The result? Silence. No callbacks, no interviews, no feedback. When I learned that 75% of applications are filtered out by ATS software before a recruiter even sees them, I decided to fix the problem myself.
+
+## The Idea
+
+The concept was simple: what if you could paste a job listing URL and get a perfectly tailored CV back in seconds? Not a template. Not a formatting tool. An actual AI rewrite that understands the job requirements and maps your experience to match.
+
+That's FitMyCV.
+
+## Why ATS Optimization Matters
+
+Applicant Tracking Systems scan CVs for keyword matches against the job description. If your CV doesn't contain the right terms — even if you have the right experience — it gets filtered out automatically. Recruiters typically spend 6 seconds scanning a CV that makes it through. Every word counts.
+
+FitMyCV solves both sides: it gets you past the ATS filter and makes the human review count by highlighting your most relevant experience for each specific role.
+
+## The Technical Build
+
+### AI Pipeline
+
+The core pipeline has three stages:
+
+1. **Job Extraction** — When you paste a URL, Groq parses the job page and extracts structured requirements: skills, qualifications, responsibilities, and company context.
+2. **CV Tailoring** — OpenAI's GPT-4o-mini takes your reference CV and the extracted requirements, then rewrites bullet points, adjusts language, and optimizes keyword placement while keeping your authentic experience intact.
+3. **Cover Letter Generation** — Using the same job context and your tailored CV, the AI generates a personalized cover letter that ties your experience directly to the role.
+
+### PDF Parsing
+
+Users upload their base CV as a PDF. I use the `unpdf` library to extract text client-side, then send it through AI to convert unstructured text into a clean JSON Resume schema. This structured data becomes the foundation for all future tailoring.
+
+### Match Scoring
+
+After tailoring, the system calculates an ATS compatibility score (0–100%) by comparing keyword overlap, skills coverage, and structural alignment between your CV and the job requirements. Users can see exactly where they match and where gaps remain.
+
+### Template System
+
+I built six PDF templates — Minimal, Executive, Creative, Tech, Classic, and Bold — using jsPDF. Each template is optimized for readability and ATS parsing, with clean formatting that works across different screening systems.
+
+## Stack Decisions
+
+- **Next.js 16 + React 19** for the framework — server components for the dashboard, client components for the interactive tailoring flow.
+- **MongoDB** for storing reference CVs, tailored outputs, and company research.
+- **Groq over Anthropic** for the initial job parsing — faster response times at lower cost for the extraction step.
+- **OpenAI GPT-4o-mini** for the actual tailoring — the right balance of quality and speed for rewriting CV content.
+- **Zustand** for client-side state management during the multi-step tailoring flow.
+- **TanStack React Query** for data fetching with optimistic updates on the dashboard.
+
+## The Company Research Feature
+
+One feature I didn't plan but users love: when you paste a job URL, FitMyCV automatically generates a company research brief. It pulls together company info, funding stage, team size, and role-specific insights — essentially giving you interview prep material alongside your tailored CV.
+
+## What I Learned
+
+Building FitMyCV taught me that the best AI products don't try to replace the user — they amplify what's already there. FitMyCV doesn't invent experience. It takes what you've actually done and presents it in the language each specific job is looking for.
+
+The difference between a generic CV and a tailored one isn't the content — it's the framing. And that's exactly what AI is good at.
+
+Try it yourself at [fitmycv.co](https://fitmycv.co).

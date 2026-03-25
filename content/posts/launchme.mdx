@@ -1,0 +1,79 @@
+---
+title: 'Building LaunchMe: Resume to Portfolio Website in 60 Seconds'
+summary: How I built a platform that turns resumes into professional portfolio websites instantly — the architecture, AI parsing, and the 800+ sites generated in 5 days.
+image: /images/projects/launchme.png
+author: 'Farirai Masocha'
+publishedAt: '2026-02-20'
+---
+
+# Building LaunchMe: Resume to Portfolio Website in 60 Seconds
+
+Every professional needs an online presence. But most people don't have the time, skills, or budget to build a portfolio site from scratch. I kept seeing the same problem: talented people with impressive resumes but zero web presence beyond a LinkedIn profile.
+
+So I built LaunchMe — a tool that takes a resume PDF and turns it into a live, themed portfolio website in under a minute.
+
+## The Core Idea
+
+The workflow is dead simple:
+
+1. Upload your resume as a PDF
+2. AI extracts and structures all your information
+3. Pick a theme, choose a URL slug, hit publish
+4. Your site is live at `launchme.site/yourname`
+
+No sign-up friction. No drag-and-drop builders. No "which hosting provider should I use?" Just upload and go.
+
+## How the AI Parsing Works
+
+The hardest part of this build was reliable resume parsing. Resumes are wildly inconsistent — different formats, layouts, section names, and structures. What one person calls "Work Experience" another calls "Professional History" or just lists without a header.
+
+### The Pipeline
+
+1. **PDF Text Extraction** — I use the `unpdf` library to extract raw text from the uploaded PDF client-side. No server upload needed.
+2. **LLM Structuring** — The raw text goes to Groq's `llama-3.1-8b-instant` model with a prompt that maps the content to the JSON Resume schema — a standardized format for resume data.
+3. **Validation** — The structured output is validated and stored, becoming the source of truth for the generated website.
+
+I chose Groq over other providers for parsing speed. When someone uploads a resume, they expect near-instant results. Groq's inference speed makes the extraction feel real-time.
+
+## The Theme System
+
+I built 8 themes, each targeting a different professional aesthetic:
+
+- **Classic** — Clean and traditional, suits most industries
+- **Terminal** — Developer-focused with a code editor feel
+- **Warm** — Soft tones for creative professionals
+- **Brutalist** — Bold and unconventional for designers
+- **Gradient** — Modern with smooth color transitions
+- **Neon** — High contrast for standing out
+- **Sky Blue** — Light and approachable
+- **Lavender** — Elegant and refined
+
+Each theme is a self-contained React component that receives the same structured data. This made it easy to add new themes without touching the data layer.
+
+## The Interactive Globe
+
+One feature that took off unexpectedly: the live globe visualization. Using Mapbox GL, I built an interactive 3D globe that shows every published LaunchMe site as a marker on the map. You can spin it, zoom in, and click on markers to see the sites.
+
+It started as a fun experiment but became a powerful social proof element. When people see hundreds of dots around the world, they want to add theirs.
+
+## Architecture Decisions
+
+- **Next.js 16 with App Router** — Server components for the public portfolio pages (fast initial load, good SEO), client components for the editor and dashboard.
+- **MongoDB** — Flexible schema works well for resume data that varies between users. Each website document contains all the structured resume data, theme selection, and metadata.
+- **NextAuth.js with Google + GitHub OAuth** — Two auth providers to maximize sign-up conversion. Most developers prefer GitHub, most non-developers prefer Google.
+- **Framer Motion** — Smooth page transitions and micro-interactions that make the tool feel polished without being slow.
+- **Polar.sh for payments** — Simple one-time payment integration for the Pro tier at $5. No subscription fatigue.
+
+## The Launch
+
+LaunchMe generated 800+ portfolio websites in its first 5 days. The growth was almost entirely organic — people published their sites, shared them on LinkedIn, and their connections wanted their own.
+
+The viral loop was built into the product: every published site is a free advertisement for LaunchMe.
+
+## What's Next
+
+I'm working on custom domain support so users can point their own domain to their LaunchMe site, and expanding the theme library based on user requests.
+
+The goal has always been the same: make it trivially easy for anyone to have a professional online presence. No excuses, no barriers, just upload and launch.
+
+Check it out at [launchme.site](https://launchme.site).
