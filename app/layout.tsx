@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display } from 'next/font/google'
+import { Outfit, DM_Serif_Display } from 'next/font/google'
 
 import { cn } from '@/lib/utils'
 
@@ -7,9 +7,11 @@ import './globals.css'
 import Providers from '@/components/providers'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
+import FMWatermark from '@/components/fm-watermark'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
-const playfair = Playfair_Display({
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' })
+const dmSerif = DM_Serif_Display({
+  weight: '400',
   subsets: ['latin'],
   variable: '--font-serif'
 })
@@ -58,11 +60,12 @@ export default function RootLayout({
       <body
         className={cn(
           'flex min-h-screen flex-col font-sans antialiased',
-          inter.variable,
-          playfair.variable
+          outfit.variable,
+          dmSerif.variable
         )}
       >
         <Providers>
+          <FMWatermark />
           <Header />
           <main className='grow'>{children}</main>
           <Footer />

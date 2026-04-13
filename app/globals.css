@@ -84,7 +84,7 @@
   }
 
   .title {
-    @apply font-serif text-3xl font-bold underline decoration-border/75 decoration-2 underline-offset-8;
+    @apply font-sans text-3xl font-bold underline decoration-border/75 decoration-2 underline-offset-8;
   }
 
   .prose pre {
@@ -102,5 +102,40 @@
 
   .prose code span {
     @apply font-medium;
+  }
+}
+
+/* FM Watermark */
+.fm-watermark-text {
+  font-family: var(--font-serif), 'DM Serif Display', serif;
+}
+
+.fm-light-1 {
+  stroke-dasharray: 60 1400;
+  opacity: 0.12;
+  animation: fm-move 6s linear infinite;
+}
+
+.fm-light-2 {
+  stroke-dasharray: 80 1400;
+  opacity: 0.08;
+  animation: fm-move 6s linear infinite;
+  animation-delay: -3s;
+  animation-direction: reverse;
+}
+
+.fm-light-3 {
+  stroke-dasharray: 20 1400;
+  opacity: 0.2;
+  animation: fm-move 4s linear infinite;
+  animation-delay: -1s;
+}
+
+@keyframes fm-move {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -1460;
   }
 }
