@@ -110,32 +110,29 @@
   font-family: var(--font-serif), 'DM Serif Display', serif;
 }
 
-.fm-light-1 {
-  stroke-dasharray: 60 1400;
-  opacity: 0.12;
-  animation: fm-move 6s linear infinite;
+.fm-signature {
+  color: currentColor;
+  opacity: 0.18;
 }
 
-.fm-light-2 {
-  stroke-dasharray: 80 1400;
-  opacity: 0.08;
-  animation: fm-move 6s linear infinite;
-  animation-delay: -3s;
-  animation-direction: reverse;
+.fm-signature path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
 }
 
-.fm-light-3 {
-  stroke-dasharray: 20 1400;
-  opacity: 0.2;
-  animation: fm-move 4s linear infinite;
-  animation-delay: -1s;
+.fm-signature.is-animating path {
+  animation: fm-draw var(--fm-duration, 1.6s) ease forwards;
 }
 
-@keyframes fm-move {
-  from {
+@keyframes fm-draw {
+  to {
     stroke-dashoffset: 0;
   }
-  to {
-    stroke-dashoffset: -1460;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fm-signature path {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 }
