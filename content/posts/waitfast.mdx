@@ -1,0 +1,70 @@
+---
+title: 'Building WaitFast: Waitlists and Email Capture Without the Enterprise Bloat'
+summary: How I built a waitlist platform that ships a branded page and an embeddable widget from the same codebase — and hardened it for real-world traffic.
+image: /images/projects/waitfast.png
+author: 'Farirai Masocha'
+publishedAt: '2026-04-15'
+---
+
+# Building WaitFast: Waitlists and Email Capture Without the Enterprise Bloat
+
+Every indie project I've shipped has hit the same wall: the landing page goes up, a few hundred people visit, and most of them leave with no way to hear about the launch. The big email platforms — Mailchimp, ConvertKit, Beehiiv — are built for publishers with thousands of subscribers and marketing teams to match. For a solo founder with a one-page site, they're overkill.
+
+So I built WaitFast — a focused tool that does two things well: host a branded waitlist page, or embed a signup widget anywhere. Same subscriber store, same campaign editor, no spreadsheet of features I'll never use.
+
+## The Core Idea
+
+One project, two surfaces:
+
+1. **A hosted waitlist page** at `waitfast.com/your-slug` — for people who don't have a site yet
+2. **An embeddable widget** — for people who already have a landing page and just want a signup form
+
+Both feed the same subscriber store. Both pipe into the same campaign composer. The user doesn't have to choose upfront — they can start with the hosted page and drop in the widget later when their marketing site ships.
+
+## Making the Widget Embed Anywhere
+
+The widget was the hardest part. "Embeddable" means something different in every framework, and I wanted WaitFast to work everywhere a founder might have a landing page — not just React.
+
+I ended up shipping snippets for React, Next.js, Vue, Svelte, Angular, plain HTML, and Framer. Under the hood it's the same form component, but each snippet wraps it in whatever the host framework expects.
+
+The tricky bit is cross-origin. A widget living on `customer-site.com` POSTing to `waitfast.com/api/subscribe` is a textbook CORS preflight scenario. I spent more time on the OPTIONS handler and origin allowlist than on the form itself. Getting this right means the widget works cross-origin *without* being a wildcard that anyone on the internet can abuse.
+
+## Sending Email That Actually Lands
+
+WaitFast sends through Resend by default — great deliverability, simple API, fair pricing. But some customers want to send from their own domain (`hello@yourcompany.com`), so I added custom SMTP support: a `Domain` model for verification and an `EmailAddress` model for the verified sender addresses.
+
+The other problem with user-generated email content is injection. The campaign editor is Tiptap, which outputs HTML, and that HTML eventually goes into an email body. Without sanitization, anyone can paste a `<style>` block or an `onerror` attribute and start shipping mischief from your domain. Every campaign HTML passes through sanitize-html on the server and DOMPurify on the client before it gets near the send pipeline.
+
+## Hardening for Real Traffic
+
+Once you put a public signup endpoint on the internet, bots find it. Fast. The last two weeks of commits have been almost entirely security work:
+
+- **Per-IP rate limiting** on signup and campaign-send endpoints
+- **CSP hardening** on the widget and the dashboard
+- **Switching to the Web Crypto API** for anything that needs randomness (tokens, unsubscribe links)
+- **File size limits** on contact imports so nobody uploads a 2GB CSV
+- **Tighter CORS preflight rules** on the widget's POST routes
+
+None of this is glamorous. It's the work that happens after "the feature works" and before "the feature survives contact with the internet."
+
+## The Stack
+
+- **Next.js 16 App Router** — server components for marketing and waitlist pages, client components for the dashboard
+- **React 19** — using the new transitions everywhere form state gets optimistic
+- **MongoDB + Mongoose** — flexible schema for subscriber metadata that varies by project
+- **Tailwind CSS v4** with shadcn/ui and Framer Motion
+- **TanStack Query v5** for client-side data fetching and cache invalidation
+- **Tiptap** for the campaign editor
+- **Resend** for email, **Polar** for payments, **NextAuth** for auth
+
+## What's Next
+
+The near-term roadmap is mostly about reach:
+
+- **Referral incentives** baked into the widget — subscribers share a link, move up the list
+- **More widget targets** — Webflow, WordPress, Shopify
+- **Custom domains** for hosted waitlist pages so `waitlist.yourcompany.com` points straight at WaitFast
+
+The goal hasn't changed. A founder should be able to stand up a waitlist in ten minutes, embed a signup form anywhere, and send a clean email when their product ships. Everything else is optional.
+
+Source on [GitHub](https://github.com/fariraimasocha/waitfast).

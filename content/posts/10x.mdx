@@ -1,0 +1,78 @@
+---
+title: 'Building 10x: Teaching AI Agents to See UI the Way Designers Do'
+summary: Why I built a skill pack for Claude Code and Codex that turns "this UI feels off" into a concrete, reviewable list of fixes — and how the polish orchestrator coordinates six independent design checks.
+image: /images/projects/10x.png
+author: 'Farirai Masocha'
+publishedAt: '2026-04-15'
+---
+
+# Building 10x: Teaching AI Agents to See UI the Way Designers Do
+
+I spent a month watching AI agents ship frontend code. Features landed fast. Polish didn't. The same problems kept showing up in PR after PR — a type scale with eight sizes nobody agreed on, four shades of grey that should be one, spacing that drifted off the grid, shadows inherited from three different component libraries.
+
+The code worked. It just felt wrong. And the agents had no idea, because nobody had told them what to look for.
+
+10x is the instruction set I wish those agents had.
+
+## The Core Idea
+
+10x is a dependency-free skill pack. No runtime library, no deterministic scanner, no bundle. Just seven structured `SKILL.md` files that an AI agent reads and follows when asked to polish a UI.
+
+Each skill owns one dimension of design quality:
+
+- **Typography** — scale, weight, tracking, hierarchy
+- **Color** — palette fragmentation, contrast, semantic roles
+- **Spacing** — grouping rhythm, off-scale values
+- **Depth** — shadow and elevation consistency
+- **Motion** — duration, easing, reduced-motion support
+- **Responsive** — breakpoints, stacking, mobile-first patterns
+
+And then there's `polish` — a meta-skill that runs all six in a deliberate order so each pass builds on the last.
+
+## Why Skills Instead of a Library
+
+The first version of this idea was a linter. A Node package with rules you'd run against your codebase. I ripped it up after a week.
+
+The problem is that design polish isn't really a linter problem. It's a judgment problem. "Is this shadow part of the same elevation scale as that one?" is context-dependent. A static rule either over-flags (noise) or under-flags (useless). An AI agent, given the right instructions, can actually *look* at the UI and reason about it.
+
+So 10x ships no code. It ships a prompt — a carefully structured one, split across seven files, with examples, config, and decision trees. The agent is the runtime.
+
+## The Confidence Rule
+
+The single most important rule in 10x: **only propose an edit when confidence is above 80%.** Everything else goes in the report as an observation.
+
+This sounds obvious but it's the difference between a tool people trust and a tool that spams PRs with bad suggestions. Every skill has a section on what counts as high-confidence versus what should stay in the report. "This button uses a shadow that doesn't match any other surface in the codebase" — high confidence, propose the fix. "This page could probably use more whitespace" — report only, don't touch it.
+
+## The Polish Orchestrator
+
+The interesting engineering problem was `/polish`. Running six skills sequentially isn't hard. Making their findings not contradict each other is.
+
+Example: the typography skill wants to reduce your type scale from eight sizes to five. The spacing skill is about to propose new line-height tokens. If they run independently, you get two overlapping PRs fighting for the same lines.
+
+The order matters, and I settled on: **typography → color → spacing → depth → motion → responsive.** Typography first because line-height and tracking feed into spacing decisions. Color before spacing because semantic color roles inform which groupings need visual separation. Motion after depth because motion duration often scales with elevation change.
+
+Findings merge into one report. If two skills propose conflicting edits, the later one defers. The agent gets one coherent set of changes to review, not six.
+
+## Three Modes
+
+Every skill supports three modes:
+
+- `analyse` — report only, no edits
+- `plan` — report plus proposed edits, nothing applied
+- `apply` — make the changes
+
+The default is `plan`. You see what it wants to do, you approve, it ships. I don't trust any tool — AI or otherwise — that jumps straight to `apply` without showing its work first.
+
+## Install as Symlinks
+
+The install script is shell, not Node, and it does one thing: symlinks `skills/*/` into `~/.claude/skills/` and the Codex equivalent.
+
+Symlinks mean updates are instant. Pull the repo, the skills change in place. No version pinning, no package registry, no install hooks. For a guidance layer that changes often, this is the right amount of machinery — which is to say, almost none.
+
+## What's Next
+
+The near-term focus is expanding the skill library without bloating the polish orchestrator. A11y, forms, and empty-state skills are next, but they'll run as standalone checks rather than joining `/polish` — that chain is already doing as much as it can without losing coherence.
+
+I'm also testing 10x against codebases I didn't write. That's where a guidance layer either proves itself or falls apart.
+
+Source on [GitHub](https://github.com/fariraimasocha/10x).

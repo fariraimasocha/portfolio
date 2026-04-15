@@ -1,0 +1,57 @@
+---
+title: WaitFast
+summary: Launch a waitlist, embed signup widgets anywhere, and turn early interest into paying customers
+image: /images/projects/waitfast.png
+author: 'Farirai Masocha'
+publishedAt: '2026-04-15'
+---
+
+# WaitFast: Waitlists and Email Capture Built for Shipping
+
+[WaitFast](https://github.com/fariraimasocha/waitfast) is a waitlist and email-capture platform for founders and creators. Spin up a branded waitlist page in minutes, drop an embeddable signup widget into any site, collect subscribers, and send them targeted campaigns — all from a single dashboard, without the overhead of enterprise email tools.
+
+## The Problem
+
+Most early-stage projects die on the vine because they have nowhere to capture interest. People land on a landing page, nod, and leave. By the time the product ships, the audience is gone. The existing options — Mailchimp, ConvertKit, Beehiiv — are overkill for a team that just needs a page, a form, and a send button.
+
+## How It Works
+
+1. **Create a project** — Spin up a branded waitlist page (e.g. `waitfast.com/your-slug`) or generate a widget snippet for an existing site.
+2. **Collect signups** — Every submission lands in the same subscriber store, tagged by source, deduped, and ready to segment.
+3. **Send campaigns** — Write an email, pick an audience, send it through Resend (or your own SMTP domain), and watch delivery stats roll in.
+
+## Key Features
+
+### Waitlist Builder
+Branded, hosted waitlist pages with custom copy, colors, and a public URL — no code required.
+
+### Embeddable Widget
+One signup widget that drops into React, Next.js, Vue, Svelte, Angular, plain HTML, and Framer sites. CORS preflight handling keeps it working safely across origins.
+
+### Email Campaigns
+A Tiptap-powered editor for writing campaigns, with delivery stats (open rates, bounces) surfaced per send.
+
+### Custom SMTP Domains
+Bring your own domain and send from `hello@yourcompany.com` instead of a shared sender. Domain + email address models handle the verification flow.
+
+### Referral Tracking
+Optional referral incentives inside the widget — subscribers share a unique link and move up the list.
+
+### CSV Export
+Own your data. Export the full subscriber list anytime.
+
+## Tech Stack
+
+- **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS v4
+- **Data**: MongoDB with Mongoose, TanStack Query v5 for client-side fetching
+- **Auth**: NextAuth.js
+- **Email**: Resend for transactional + campaign delivery
+- **Payments**: Polar for checkout and subscriptions
+- **Editor**: Tiptap for the campaign composer
+- **UI**: shadcn/ui, Framer Motion, react-hot-toast
+
+## Security
+
+Campaign HTML passes through sanitize-html and DOMPurify to block CSS and XSS injection. Per-IP rate limiting protects signup endpoints. CORS preflight handling and a hardened CSP keep the embeddable widget safe to drop into third-party sites.
+
+Source on [GitHub](https://github.com/fariraimasocha/waitfast).

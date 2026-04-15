@@ -1,0 +1,60 @@
+---
+title: 10x
+summary: A dependency-free skill pack that gives Claude Code and Codex a systematic eye for UI polish — typography, color, spacing, depth, motion, and responsive design
+image: /images/projects/10x.png
+author: 'Farirai Masocha'
+publishedAt: '2026-04-15'
+---
+
+# 10x: Systematic UI Polish for Claude Code and Codex
+
+[10x](https://github.com/fariraimasocha/10x) is a skill pack for Claude Code and Codex that turns "this UI feels off" into a concrete, reviewable set of fixes. It ships seven focused skills — typography, color, spacing, depth, motion, responsive, and a `polish` orchestrator — that an AI agent can run against any frontend codebase to surface inconsistencies and propose edits.
+
+## The Problem
+
+AI coding agents are great at shipping features and mediocre at polishing them. You get UI that works but feels slightly wrong — a type scale with eight sizes nobody agreed on, four shades of grey that should be one, spacing that drifts off the grid. Humans notice this. Agents usually don't, because nobody told them what to look for.
+
+10x is that instruction set.
+
+## How It Works
+
+1. **Install** — Clone the repo and run `install.sh`. It symlinks the skills into `~/.claude/skills/` and the equivalent Codex location.
+2. **Invoke** — Ask the agent to run `/polish`, `/typography`, or any of the individual skills on a scope (a file, a route, a component).
+3. **Choose a mode** — `analyse` for a report only, `plan` for a report plus proposed edits, `apply` to make the changes.
+
+## The Skills
+
+### Typography
+Type scale, hierarchy, weight, line-height, tracking, font consolidation.
+
+### Color
+Palette fragmentation, contrast, semantic roles, hardcoded hex values.
+
+### Spacing
+Off-scale padding and margin, grouping rhythm, token opportunities.
+
+### Depth
+Surface layers, shadows, elevation roles, z-index consistency.
+
+### Motion
+Transition safety, duration and easing drift, reduced-motion support.
+
+### Responsive
+Rigid widths, stacking, breakpoint strategy, mobile-first patterns.
+
+### Polish (orchestrator)
+Runs the six above in a coordinated order — typography → color → spacing → depth → motion → responsive — so each pass builds on the last. Findings merge into one non-contradictory report.
+
+## Design Principles
+
+- **Confidence-driven** — Skills only propose fixes when confidence clears an 80% bar. Everything else is reported, not edited.
+- **Dependency-free** — No runtime library, no bundle, no scanner. Skills are pure guidance that emit Markdown reports and proposed diffs.
+- **Framework-agnostic** — Works with React, Vue, Svelte, plain HTML; the skills reason about design tokens and structure, not a specific stack.
+- **Dual-agent** — Same codebase, same skills, works with Claude Code and Codex via separate install targets.
+- **Token-aware** — Each skill can emit proposed design tokens (typography, color, spacing, elevation, motion) as JSON.
+
+## Config
+
+A single `10x.config.json` at the repo root sets defaults for scale, neutrals, breakpoints, and motion timing. Agents read it before running so recommendations match the project's existing system.
+
+Source on [GitHub](https://github.com/fariraimasocha/10x).
