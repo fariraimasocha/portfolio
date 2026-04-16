@@ -36,7 +36,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 }
 
 export async function getPosts(limit?: number): Promise<PostMetadata[]> {
-    const files = await fs.readdir(rootDirectory)
+    const files = (await fs.readdir(rootDirectory)).filter(file => file.endsWith('.mdx'))
 
     const posts = await Promise.all(files.map(async file => await getPostMetadata(file)))
 

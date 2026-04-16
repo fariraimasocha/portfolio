@@ -28,7 +28,7 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
 }
 
 export async function getProjects(limit?: number): Promise<ProjectMetadata[]> {
-    const files = fs.readdirSync(rootDirectory)
+    const files = fs.readdirSync(rootDirectory).filter(file => file.endsWith('.mdx'))
 
     const projects = files
         .map(file => getProjectMetadata(file))
