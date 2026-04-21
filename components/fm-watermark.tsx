@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import opentype from 'opentype.js'
 
 const FONT_URL = '/fonts/DMSerifDisplay.ttf'
@@ -13,6 +14,7 @@ const DELAY = 0.15
 type Letter = { d: string }
 
 export default function FMWatermark() {
+  const pathname = usePathname()
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [letters, setLetters] = useState<Letter[]>([])
   const [viewBox, setViewBox] = useState('0 0 500 320')
@@ -80,6 +82,8 @@ export default function FMWatermark() {
     observer.observe(el)
     return () => observer.disconnect()
   }, [letters.length])
+
+  if (pathname === '/') return null
 
   return (
     <div

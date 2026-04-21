@@ -1,9 +1,7 @@
-import Link from 'next/link'
 import Image from 'next/image'
 
 import { formatDate } from '@/lib/utils'
 import MDXContent from '@/components/mdx-content'
-import { ArrowLeftIcon } from '@radix-ui/react-icons'
 import { getProjectBySlug, getProjects } from '@/lib/projects'
 import { notFound } from 'next/navigation'
 
@@ -30,16 +28,8 @@ export default async function Project({
   const { title, image, author, publishedAt } = metadata
 
   return (
-    <section className='pb-24 pt-32'>
+    <section className='py-24'>
       <div className='container max-w-3xl'>
-        <Link
-          href='/projects'
-          className='mb-8 inline-flex items-center gap-2 text-sm font-light text-muted-foreground transition-colors hover:text-foreground'
-        >
-          <ArrowLeftIcon className='h-5 w-5' />
-          <span>Back to projects</span>
-        </Link>
-
         {image && (
           <div className='relative mb-6 aspect-video w-full overflow-hidden rounded-lg ring-1 ring-black/5 dark:ring-white/5'>
             <Image

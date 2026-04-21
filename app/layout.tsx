@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
-import { Outfit, DM_Serif_Display } from 'next/font/google'
+import { Outfit, DM_Serif_Display, JetBrains_Mono } from 'next/font/google'
 
 import { cn } from '@/lib/utils'
 
 import './globals.css'
 import Providers from '@/components/providers'
-import Header from '@/components/header'
-import Footer from '@/components/footer'
+import BackButton from '@/components/back-button'
+import ThemeToggle from '@/components/theme-toggle'
 import FMWatermark from '@/components/fm-watermark'
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' })
@@ -14,6 +14,10 @@ const dmSerif = DM_Serif_Display({
   weight: '400',
   subsets: ['latin'],
   variable: '--font-serif'
+})
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono'
 })
 
 export const metadata: Metadata = {
@@ -61,14 +65,15 @@ export default function RootLayout({
         className={cn(
           'flex min-h-screen flex-col font-sans antialiased',
           outfit.variable,
-          dmSerif.variable
+          dmSerif.variable,
+          jetbrainsMono.variable
         )}
       >
         <Providers>
           <FMWatermark />
-          <Header />
+          <BackButton />
+          <ThemeToggle />
           <main className='grow'>{children}</main>
-          <Footer />
         </Providers>
       </body>
     </html>

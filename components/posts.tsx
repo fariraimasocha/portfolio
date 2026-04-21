@@ -13,7 +13,7 @@ export default function Posts({ posts }: { posts: PostMetadata[] }) {
                         className='flex flex-col justify-between gap-x-4 gap-y-1 sm:flex-row'
                     >
                         <div className='max-w-lg'>
-                            <p className='text-balance text-lg font-semibold'>{post.title}</p>
+                            <p className='text-balance font-mono text-lg'>{post.title}</p>
                             <p className='mt-1 line-clamp-2 text-pretty text-sm font-light text-muted-foreground'>
                                 {post.summary}
                             </p>

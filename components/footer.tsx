@@ -1,4 +1,7 @@
+'use client'
+
 import { JSX, SVGProps } from 'react'
+import { usePathname } from 'next/navigation'
 
 const navigation = [
     {
@@ -30,6 +33,9 @@ const navigation = [
 ]
 
 export default function Footer() {
+    const pathname = usePathname()
+    if (pathname === '/') return null
+
     return (
         <footer className='py-8'>
             <div className='container max-w-3xl'>

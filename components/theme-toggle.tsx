@@ -25,11 +25,12 @@ export default function ThemeToggle() {
             onClick={() => {
                 setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
             }}
+            className='fixed right-4 top-4 z-50 text-muted-foreground transition-colors hover:text-foreground sm:right-6 sm:top-6'
         >
             {resolvedTheme === 'dark' ? (
-                <SunIcon className='size-4 text-orange-300' />
+                <SunIcon className='size-4' />
             ) : (
-                <MoonIcon className='size-4 text-sky-950' />
+                <MoonIcon className='size-4' />
             )}
 
             <span className='sr-only'>Toggle theme</span>

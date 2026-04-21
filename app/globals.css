@@ -84,7 +84,7 @@
   }
 
   .title {
-    @apply font-sans text-3xl font-bold underline decoration-border/75 decoration-2 underline-offset-8 text-balance;
+    @apply font-mono text-2xl font-normal tracking-tight text-balance;
   }
 
   .prose p {
@@ -98,11 +98,11 @@
   }
 
   .prose pre {
-    @apply overflow-x-auto rounded-lg bg-accent px-5 py-4 text-sm;
+    @apply overflow-x-auto rounded-lg bg-accent px-5 py-4 text-sm font-mono;
   }
 
   .prose code {
-    @apply rounded-lg px-1 py-0.5;
+    @apply rounded-lg px-1 py-0.5 font-mono;
   }
 
   .prose pre code {
@@ -145,4 +145,39 @@
     animation: none;
     stroke-dashoffset: 0;
   }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 10x polish tokens */
+:root {
+  --10x-type-xs: 0.75rem;
+  --10x-type-sm: 0.875rem;
+  --10x-type-base: 1rem;
+  --10x-type-lg: 1.125rem;
+  --10x-type-xl: 1.25rem;
+  --10x-type-h1: 1.5rem;
+  --10x-type-display: 2rem;
+
+  --10x-space-1: 0.25rem;
+  --10x-space-2: 0.5rem;
+  --10x-space-4: 1rem;
+  --10x-space-6: 1.5rem;
+  --10x-space-8: 2rem;
+  --10x-space-12: 3rem;
+  --10x-space-16: 4rem;
+  --10x-space-24: 6rem;
+
+  --10x-motion-fast: 150ms;
+  --10x-motion-standard: 200ms;
+  --10x-motion-slow: 300ms;
+  --10x-ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --10x-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
