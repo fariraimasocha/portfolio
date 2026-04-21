@@ -41,7 +41,7 @@ export default async function Project({
         </Link>
 
         {image && (
-          <div className='relative mb-6 aspect-video w-full overflow-hidden rounded-lg'>
+          <div className='relative mb-6 aspect-video w-full overflow-hidden rounded-lg ring-1 ring-black/5 dark:ring-white/5'>
             <Image
               src={image}
               alt={title || ''}
@@ -53,7 +53,7 @@ export default async function Project({
 
         <header>
           <h1 className='title'>{title}</h1>
-          <p className='mt-3 text-xs text-muted-foreground'>
+          <p className='mt-3 text-xs tabular-nums text-muted-foreground'>
             {author} / {formatDate(publishedAt ?? '')}
           </p>
         </header>

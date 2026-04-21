@@ -11,15 +11,30 @@ export default function Header() {
                     </Link>
                 </div>
 
-                <ul className='flex items-center gap-6 text-sm font-light text-muted-foreground sm:gap-10'>
-                    <li className='transition-colors hover:text-foreground'>
-                        <Link href='/posts'>Posts</Link>
+                <ul className='flex items-center gap-2 text-sm font-light text-muted-foreground sm:gap-4'>
+                    <li>
+                        <Link
+                            href='/posts'
+                            className='inline-flex h-10 items-center rounded-md px-3 transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
+                        >
+                            Posts
+                        </Link>
                     </li>
-                    <li className='transition-colors hover:text-foreground'>
-                        <Link href='/projects'>Projects</Link>
+                    <li>
+                        <Link
+                            href='/projects'
+                            className='inline-flex h-10 items-center rounded-md px-3 transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
+                        >
+                            Projects
+                        </Link>
                     </li>
-                    <li className='transition-colors hover:text-foreground'>
-                        <Link href='/contact'>Contact</Link>
+                    <li>
+                        <Link
+                            href='/contact'
+                            className='inline-flex h-10 items-center rounded-md px-3 transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
+                        >
+                            Contact
+                        </Link>
                     </li>
                 </ul>
 

@@ -84,7 +84,17 @@
   }
 
   .title {
-    @apply font-sans text-3xl font-bold underline decoration-border/75 decoration-2 underline-offset-8;
+    @apply font-sans text-3xl font-bold underline decoration-border/75 decoration-2 underline-offset-8 text-balance;
+  }
+
+  .prose p {
+    @apply text-pretty;
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3 {
+    @apply text-balance;
   }
 
   .prose pre {

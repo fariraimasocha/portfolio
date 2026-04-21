@@ -1,7 +1,3 @@
-import { Button } from '@/components/ui/button'
-
-
-
 export default function Intro() {
     return (
         <section className='flex flex-col-reverse items-start gap-x-10 gap-y-4 pb-8 md:flex-row md:items-center'>
@@ -12,12 +8,6 @@ export default function Intro() {
                     passionate about learning new technologies and sharing knowledge with
                     others.
                 </p>
-                <Button
-                    asChild
-                    className='mt-5 disabled:opacity-50'
-                >
-                    <a href='/resume/FariraiMasocha.pdf' target='_blank'>Download CV</a>
-                </Button>
             </div>
         </section>
     )

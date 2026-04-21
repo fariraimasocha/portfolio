@@ -14,7 +14,7 @@ export default function Counter() {
             <Button size='icon' onClick={decrement}>
                 <MinusIcon />
             </Button>
-            <p>Current vote: {count}</p>
+            <p>Current vote: <span className='tabular-nums'>{count}</span></p>
             <Button size='icon' onClick={increment}>
                 <PlusIcon />
             </Button>

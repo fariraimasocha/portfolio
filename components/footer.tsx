@@ -34,14 +34,14 @@ export default function Footer() {
         <footer className='py-8'>
             <div className='container max-w-3xl'>
                 <div className='md:flex md:items-center md:justify-between'>
-                    <div className='flex justify-center space-x-6 md:order-2'>
+                    <div className='flex justify-center gap-2 md:order-2'>
                         {navigation.map(item => (
                             <a
                                 key={item.name}
                                 href={item.href}
                                 target='_blank'
                                 rel='noreferrer noopener'
-                                className='text-muted-foreground hover:text-foreground'
+                                className='inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
                             >
                                 <span className='sr-only'>{item.name}</span>
                                 <item.icon aria-hidden='true' className='h-5 w-5' />
