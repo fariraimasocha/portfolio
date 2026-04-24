@@ -14,8 +14,8 @@ export default async function Home() {
     )
 
   return (
-    <section className='flex min-h-screen items-center justify-center px-6 font-mono'>
-      <div className='flex flex-col gap-12'>
+    <section className='flex min-h-screen items-center justify-center px-4 sm:px-6 font-mono'>
+      <div className='flex w-full max-w-lg flex-col gap-8 sm:gap-12'>
         <div>
           <h1 className='text-foreground'>farirai</h1>
           <p className='text-muted-foreground'>i build things</p>
