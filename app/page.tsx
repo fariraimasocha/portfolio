@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
-import { GithubCalendar } from '@/components/ui/github-calendar'
 import { getProjects } from '@/lib/projects'
 
 const FEATURED_SLUGS = ['a-linkgenie-website', 'f-10x', 'e-waitfast']
@@ -61,14 +60,6 @@ export default async function Home() {
             </Link>
           </li>
         </ul>
-
-        <div className='overflow-x-auto opacity-70'>
-          <GithubCalendar
-            username='fariraimasocha'
-            colorSchema='gray'
-            showTotal={false}
-          />
-        </div>
 
         <div className='flex gap-4 text-sm text-muted-foreground'>
           <a
