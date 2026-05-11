@@ -7,7 +7,6 @@ import './globals.css'
 import Providers from '@/components/providers'
 import BackButton from '@/components/back-button'
 import ThemeToggle from '@/components/theme-toggle'
-import FMWatermark from '@/components/fm-watermark'
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' })
 const dmSerif = DM_Serif_Display({
@@ -70,8 +69,7 @@ export default function RootLayout({
         )}
       >
         <Providers>
-          <FMWatermark />
-          <BackButton />
+<BackButton />
           <ThemeToggle />
           <main className='grow'>{children}</main>
         </Providers>

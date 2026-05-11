@@ -2,7 +2,13 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { getProjects } from '@/lib/projects'
 
-const FEATURED_SLUGS = ['a-linkgenie-website', 'f-10x', 'e-waitfast', 'vercellense', 'b-payfari']
+const FEATURED_SLUGS = [
+  'a-linkgenie-website',
+  'f-10x',
+  'e-waitfast',
+  'vercellense',
+  'b-payfari'
+]
 
 export default async function Home() {
   const allProjects = await getProjects()
@@ -13,7 +19,7 @@ export default async function Home() {
     )
 
   return (
-    <section className='flex min-h-screen items-center justify-center px-4 sm:px-6 font-mono'>
+    <section className='flex min-h-screen items-center justify-center px-4 font-mono sm:px-6'>
       <div className='flex w-full max-w-lg flex-col gap-8 sm:gap-12'>
         <div>
           <h1 className='text-foreground'>farirai</h1>
