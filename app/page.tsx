@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { getProjects } from '@/lib/projects'
 
-const FEATURED_SLUGS = ['a-linkgenie-website', 'f-10x', 'e-waitfast']
+const FEATURED_SLUGS = ['a-linkgenie-website', 'f-10x', 'e-waitfast', 'vercellense', 'b-payfari']
 
 export default async function Home() {
   const allProjects = await getProjects()
@@ -35,7 +35,7 @@ export default async function Home() {
               </Link>
             </li>
           ))}
-          <li>
+          <li className='mt-4'>
             <Link
               href='/projects'
               className='group inline-flex w-48 items-center justify-between gap-4 border-b border-transparent transition-colors hover:border-current hover:text-foreground'
