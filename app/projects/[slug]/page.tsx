@@ -37,6 +37,7 @@ export default async function Project({
               alt={title || ''}
               className='object-contain object-top'
               fill
+              sizes='(min-width: 768px) 768px, 100vw'
             />
           </div>
         )}

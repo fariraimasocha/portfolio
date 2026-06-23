@@ -20,6 +20,7 @@ export default function Projects({
                                     src={project.image}
                                     alt={project.title || ''}
                                     fill
+                                    sizes='(min-width: 640px) 50vw, 100vw'
                                     className='object-contain object-top transition-transform duration-300 ease-out group-hover:scale-105'
                                 />
                             </div>
