@@ -1,7 +1,7 @@
 'use server'
 
 import { z } from 'zod'
-import { Resend } from 'resend'
+import { render } from '@react-email/components'
 import { ContactFormSchema, NewsletterFormSchema } from '@/lib/schemas'
 import ContactFormEmail from '@/emails/contact-form-email'
 import WelcomeEmail from '@/emails/welcome-email'
@@ -12,10 +12,34 @@ import Subscriber from '@/models/Subscriber'
 type ContactFormInputs = z.infer<typeof ContactFormSchema>
 type NewsletterFormInputs = z.infer<typeof NewsletterFormSchema>
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-const FROM_EMAIL = 'Farirai Masocha <hello@fariraimasocha.co.zw>'
+const FROM_EMAIL = { address: 'hello@fariraimasocha.co.zw', name: 'Farirai Masocha' }
 const OWNER_EMAIL = process.env.EMAIL_TO || 'fariraimasocha@gmail.com'
+
+async function sendViaCloudflare(payload: {
+  to: string | string[]
+  subject: string
+  text?: string
+  html?: string
+  reply_to?: string
+}) {
+  const res = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/email/sending/send`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.CLOUDFLARE_EMAIL_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ from: FROM_EMAIL, ...payload }),
+    }
+  )
+  const body = (await res.json()) as { success: boolean; errors?: { message: string }[] }
+  if (!res.ok || !body.success) {
+    throw new Error(
+      `Cloudflare email send failed (${res.status}): ${body.errors?.map((e) => e.message).join('; ') || 'unknown error'}`
+    )
+  }
+}
 
 export async function sendEmail(data: ContactFormInputs) {
   const result = ContactFormSchema.safeParse(data)
@@ -45,19 +69,13 @@ export async function sendEmail(data: ContactFormInputs) {
 
   // Send notification email to site owner
   try {
-    const { error: sendError } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [OWNER_EMAIL],
-      replyTo: email,
+    await sendViaCloudflare({
+      to: OWNER_EMAIL,
+      reply_to: email,
       subject: `New contact from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
-      react: ContactFormEmail({ name, email, message }),
+      html: await render(ContactFormEmail({ name, email, message })),
     })
-
-    if (sendError) {
-      console.error('Failed to send notification email:', sendError)
-      return { error: 'Failed to send message. Please try again.' }
-    }
 
     // Update MongoDB record that email was sent
     if (contactId) {
@@ -70,9 +88,8 @@ export async function sendEmail(data: ContactFormInputs) {
 
     // Send confirmation email to the person who submitted
     try {
-      await resend.emails.send({
-        from: FROM_EMAIL,
-        to: [email],
+      await sendViaCloudflare({
+        to: email,
         subject: 'Thank you for reaching out!',
         text: `Hi ${name},\n\nThank you for contacting me. I've received your message and will get back to you soon.\n\nBest regards,\nFarirai Masocha`,
       })
@@ -95,7 +112,6 @@ export async function subscribe(data: NewsletterFormInputs) {
     return { error: 'Invalid email address provided.' }
   }
 
-  const audienceId = process.env.RESEND_AUDIENCE_ID
   const { email } = result.data
 
   // Check if already subscribed in MongoDB
@@ -115,41 +131,7 @@ export async function subscribe(data: NewsletterFormInputs) {
     }
   } catch (dbError) {
     console.error('MongoDB check error:', dbError)
-    // Continue - will try to add to Resend anyway
-  }
-
-  // Add to Resend Audience (if configured)
-  let resendContactId: string | undefined
-
-  if (audienceId) {
-    try {
-      const { data: contactData, error: contactError } =
-        await resend.contacts.create({
-          email,
-          audienceId,
-          unsubscribed: false,
-        })
-
-      if (contactError) {
-        console.error('Resend API error:', contactError)
-        if ('statusCode' in contactError && contactError.statusCode === 422) {
-          if (contactError.message?.toLowerCase().includes('already exists')) {
-            // Already in Resend - this is fine, continue with MongoDB save
-          } else {
-            return { error: 'Invalid subscription request. Please try again.' }
-          }
-        } else {
-          return { error: 'Failed to subscribe. Please try again later.' }
-        }
-      } else if (contactData) {
-        resendContactId = contactData.id
-      }
-    } catch (resendError) {
-      console.error('Resend contact creation error:', resendError)
-      return { error: 'Failed to subscribe. Please try again later.' }
-    }
-  } else {
-    console.warn('RESEND_AUDIENCE_ID is not set - skipping Resend Audience')
+    // Continue - will try to save below anyway
   }
 
   // Save to MongoDB
@@ -163,7 +145,6 @@ export async function subscribe(data: NewsletterFormInputs) {
         $set: {
           isActive: true,
           source: 'website',
-          resendContactId,
         },
         $setOnInsert: {
           email,
@@ -176,30 +157,24 @@ export async function subscribe(data: NewsletterFormInputs) {
     subscriberId = subscriber._id.toString()
   } catch (dbError) {
     console.error('MongoDB save error:', dbError)
-    // Continue - Resend subscription was successful
   }
 
   // Send welcome email
   try {
-    const { error: emailError } = await resend.emails.send({
-      from: FROM_EMAIL,
+    await sendViaCloudflare({
       to: email,
       subject: 'Welcome to my newsletter!',
-      react: WelcomeEmail(),
+      html: await render(WelcomeEmail()),
+      text: 'Welcome to my newsletter! Thanks for subscribing.',
     })
 
-    if (emailError) {
-      console.error('Welcome email error:', emailError)
-    } else {
-      // Update MongoDB that welcome email was sent
-      if (subscriberId) {
-        try {
-          await Subscriber.findByIdAndUpdate(subscriberId, {
-            welcomeEmailSent: true,
-          })
-        } catch (updateError) {
-          console.error('Failed to update welcomeEmailSent:', updateError)
-        }
+    if (subscriberId) {
+      try {
+        await Subscriber.findByIdAndUpdate(subscriberId, {
+          welcomeEmailSent: true,
+        })
+      } catch (updateError) {
+        console.error('Failed to update welcomeEmailSent:', updateError)
       }
     }
   } catch (emailError) {
