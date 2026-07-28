@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Mail } from 'lucide-react'
 
 // Social glyphs via the icons0.dev registry (npx shadcn add @icons0/simple-icons/*)
 import { SimpleIconsGithub } from '@/components/icons/simple-icons/github'
@@ -14,7 +14,7 @@ import { formatDate } from '@/lib/utils'
 import CopyEmail from '@/components/copy-email'
 import HeroHeadline from '@/components/hero-headline'
 import ProjectCard from '@/components/project-card'
-import ScrollToWork from '@/components/scroll-to-work'
+import ProjectStrip from '@/components/project-strip'
 import RollingNumber from '@/components/ui/rolling-number'
 import TextAnimate from '@/components/ui/text-animate'
 import ThinkingOrb from '@/components/ui/thinking-orb'
@@ -29,11 +29,11 @@ const FEATURED_SLUGS = [
   'vercellense'
 ]
 
-const NAV = [
-  { href: '#work', label: 'work' },
-  { href: '#writing', label: 'writing' },
-  { href: '/projects', label: 'projects' },
-  { href: '/contact', label: 'contact' }
+// Nav pills. `archive` folds away below sm so two pills clear a 320px viewport.
+const PILLS = [
+  { href: '#work', label: 'Work' },
+  { href: '#about', label: 'About' },
+  { href: '/projects', label: 'Archive', smUp: true }
 ]
 
 const SOCIALS = [
@@ -58,8 +58,7 @@ const STACK = [
 ]
 
 export default async function Home() {
-  const allProjects = await getProjects()
-  const allPosts = await getPosts()
+  const [allProjects, allPosts] = await Promise.all([getProjects(), getPosts()])
   const posts = allPosts.slice(0, 5)
 
   const featured = FEATURED_SLUGS.map(slug =>
@@ -71,23 +70,59 @@ export default async function Home() {
   return (
     <>
       {/* ---------------------------------------------------------------- nav */}
-      <header className='fixed inset-x-0 top-0 z-40 bg-background/70 backdrop-blur-md'>
-        <nav className='mx-auto flex max-w-6xl items-center justify-between px-6 py-5 sm:px-10'>
+      <header className='fixed inset-x-0 top-0 z-40'>
+        {/* Dissolve, not a bar. The mask fades the backdrop-blur out along with
+            the gradient, so there's no seam where the filter stops. */}
+        <div
+          aria-hidden='true'
+          className='pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-background via-background/85 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_40%,transparent)]'
+        />
+        {/* Three zones at sm+: pills / wordmark / socials. Below sm it collapses
+            to a flex row and `order-first` pulls the wordmark back to the left. */}
+        <nav className='relative mx-auto flex max-w-6xl items-center justify-between px-6 py-5 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:px-10'>
+          {/* pr-* only matters below sm, where the pills are the rightmost
+              element and would sit under the fixed ThemeToggle */}
+          <ul className='flex items-center gap-2 pr-10 sm:pr-0'>
+            {PILLS.map(pill => (
+              <li key={pill.href} className={pill.smUp ? 'hidden sm:block' : undefined}>
+                <Link
+                  href={pill.href}
+                  className='inline-flex rounded-full bg-muted px-4 py-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground'
+                >
+                  {pill.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
           <Link
             href='/'
-            className='font-mono text-sm lowercase tracking-tight text-foreground'
+            className='order-first font-mono text-sm lowercase tracking-tight text-foreground sm:order-none sm:justify-self-center'
           >
             farirai
           </Link>
+
           {/* pr-* keeps clear of the fixed ThemeToggle in app/layout.tsx */}
-          <ul className='flex items-center gap-5 pr-10 sm:gap-7 sm:pr-12'>
-            {NAV.map(item => (
-              <li key={item.href}>
+          <ul className='hidden items-center gap-2.5 pr-12 sm:flex sm:justify-self-end'>
+            {[
+              ...SOCIALS,
+              { href: '/contact', label: 'email', Icon: Mail }
+            ].map((social, i) => (
+              <li key={social.href} className='flex items-center gap-2.5'>
+                {i > 0 && (
+                  <span className='text-border' aria-hidden='true'>
+                    /
+                  </span>
+                )}
                 <Link
-                  href={item.href}
-                  className='label-mono transition-colors duration-200 hover:text-foreground'
+                  href={social.href}
+                  {...(social.href.startsWith('http')
+                    ? { target: '_blank', rel: 'noreferrer noopener' }
+                    : {})}
+                  className='text-muted-foreground transition-colors duration-200 hover:text-foreground'
                 >
-                  {item.label}
+                  <social.Icon className='size-4' aria-hidden='true' />
+                  <span className='sr-only'>{social.label}</span>
                 </Link>
               </li>
             ))}
@@ -97,86 +132,72 @@ export default async function Home() {
 
       <section className='relative isolate overflow-hidden'>
         {/* Drafting hairlines — engineer's paper under the editorial layout */}
-        <div className='rule-grid pointer-events-none absolute inset-0 z-0' aria-hidden='true' />
+        {/* Masked at both ends so the hairlines fade in under the nav rather
+            than starting on a hard line */}
+        <div
+          className='rule-grid pointer-events-none absolute inset-0 z-0 [mask-image:linear-gradient(to_bottom,transparent,black_22%,black_88%,transparent)]'
+          aria-hidden='true'
+        />
 
-        {/* Ambient light source to the right of the type — sized to sit in the
-            gap the headline leaves, and low enough to clear the top meta rail. */}
-        <div className='pointer-events-none absolute right-[-14%] top-[30%] z-0 aspect-square w-[52vw] max-w-[260px] opacity-80 sm:right-[-4%] lg:right-[3%] lg:max-w-[320px]'>
+        {/* Ambient light sits behind the centred type now, not beside it */}
+        <div className='pointer-events-none absolute left-1/2 top-[22%] z-0 aspect-square w-[52vw] max-w-[420px] -translate-x-1/2 opacity-30 sm:w-[60vw] sm:opacity-40'>
           <ThinkingOrb />
         </div>
 
-        <div className='relative z-10 mx-auto flex min-h-svh max-w-6xl flex-col justify-between px-6 pb-14 pt-32 sm:px-10 sm:pb-20 sm:pt-36'>
-          {/* Top meta rail */}
-          <div className='grid grid-cols-2 gap-y-4 sm:grid-cols-4'>
-            <span className='label-mono'>farirai masocha</span>
-            <span className='label-mono'>harare, zw</span>
-            <span className='label-mono'>software engineer</span>
-            <span className='label-mono flex items-center gap-2 text-foreground'>
+        <div className='relative z-10 mx-auto max-w-6xl px-6 pb-12 pt-36 text-center sm:px-10 sm:pt-44'>
+          <HeroHeadline />
+
+          <p className='mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-base text-muted-foreground sm:text-lg'>
+            <span>Software Engineer</span>
+            <span aria-hidden='true'>·</span>
+            <span>Harare, ZW</span>
+            <span aria-hidden='true'>·</span>
+            <span className='inline-flex items-center gap-2 text-foreground'>
               <span className='relative flex size-1.5'>
                 <span className='absolute inline-flex size-full animate-ping rounded-full bg-[hsl(var(--ink-accent))] opacity-60' />
                 <span className='relative inline-flex size-1.5 rounded-full bg-[hsl(var(--ink-accent))]' />
               </span>
               open to work
             </span>
-          </div>
-
-          {/* Headline sits over the orb, not under it */}
-          <HeroHeadline />
-
-          {/* Bottom rail: three columns of meta on the same grid, plus a scroll cue */}
-          <div className='grid gap-8 border-t border-border pt-8 sm:grid-cols-3 sm:gap-6'>
-            <div className='flex flex-col gap-2'>
-              <span className='label-mono'>currently</span>
-              <p className='max-w-xs text-pretty text-sm leading-relaxed text-muted-foreground'>
-                Shipping AI tooling and developer utilities — small products that solve
-                one problem properly.
-              </p>
-            </div>
-            <div className='flex flex-col gap-3'>
-              <span className='label-mono'>stack</span>
-              <ul className='flex flex-wrap items-center gap-3'>
-                {STACK.map(tech => (
-                  <li key={tech.label} className='group/tech relative'>
-                    <Image
-                      src={tech.src}
-                      alt={tech.label}
-                      title={tech.label}
-                      width={22}
-                      height={22}
-                      unoptimized
-                      className={`size-[22px] opacity-60 grayscale transition duration-300 group-hover/tech:opacity-100 group-hover/tech:grayscale-0 ${
-                        tech.invertOnDark ? 'dark:invert' : ''
-                      }`}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className='flex items-end justify-end'>
-              <ScrollToWork className='label-mono transition-colors hover:text-foreground'>
-                scroll to work
-              </ScrollToWork>
-            </div>
-          </div>
+          </p>
         </div>
       </section>
 
-      {/* ----------------------------------------------------------- ticker */}
-      <div className='relative flex overflow-hidden border-y border-border py-5'>
-        <div className='marquee-track flex shrink-0 items-center gap-10 pr-10'>
-          {[...allProjects, ...allProjects].map((p, i) => (
-            <span key={i} className='flex shrink-0 items-center gap-10'>
-              <span className='label-mono whitespace-nowrap'>{p.title}</span>
-              <span
-                className='size-1 shrink-0 rounded-full bg-[hsl(var(--ink-accent))]'
-                aria-hidden='true'
-              />
-            </span>
-          ))}
-        </div>
-      </div>
+      {/* ------------------------------------------------------ work strip */}
+      <ProjectStrip projects={allProjects} />
 
       <div className='mx-auto max-w-6xl px-6 sm:px-10'>
+        {/* --------------------------------------------------------- meta band */}
+        <section className='grid gap-8 border-b border-border py-10 sm:grid-cols-2'>
+          <div className='flex flex-col gap-2'>
+            <span className='label-mono'>currently</span>
+            <p className='max-w-xs text-pretty text-sm leading-relaxed text-muted-foreground'>
+              Shipping AI tooling and developer utilities — small products that solve one
+              problem properly.
+            </p>
+          </div>
+          <div className='flex flex-col gap-3 sm:items-end'>
+            <span className='label-mono'>stack</span>
+            <ul className='flex flex-wrap items-center gap-3'>
+              {STACK.map(tech => (
+                <li key={tech.label} className='group/tech relative'>
+                  <Image
+                    src={tech.src}
+                    alt={tech.label}
+                    title={tech.label}
+                    width={22}
+                    height={22}
+                    unoptimized
+                    className={`size-[22px] opacity-60 grayscale transition duration-300 group-hover/tech:opacity-100 group-hover/tech:grayscale-0 ${
+                      tech.invertOnDark ? 'dark:invert' : ''
+                    }`}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
         {/* ------------------------------------------------------------- stats */}
         <section className='grid grid-cols-3 gap-6 border-b border-border py-10 sm:py-14'>
           {[
@@ -223,7 +244,10 @@ export default async function Home() {
         </section>
 
         {/* --------------------------------------------------------------- bio */}
-        <section className='relative border-t border-border py-24 sm:py-32'>
+        <section
+          id='about'
+          className='relative scroll-mt-24 border-t border-border py-24 sm:py-32'
+        >
           <span className='label-mono'>02 / about</span>
           <div className='mt-8 flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16'>
             <p className='max-w-2xl text-pretty text-xl leading-relaxed text-muted-foreground sm:text-2xl sm:leading-relaxed'>
@@ -262,7 +286,7 @@ export default async function Home() {
                       </span>
                     )}
                     <ArrowUpRight
-                      className='size-4 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100'
+                      className='size-4 text-muted-foreground opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100'
                       aria-hidden='true'
                     />
                   </span>

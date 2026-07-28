@@ -326,9 +326,16 @@ body {
   background-size: calc(100% / 6) 100%;
 }
 
-/* Ticker of project names — density and drift under the hero */
+/* Drifting project strip under the hero */
 .marquee-track {
   animation: marquee 44s linear infinite;
+}
+
+/* Hold still while it's being read — a moving card is a moving click target.
+   focus-within covers keyboard users tabbing through the tiles. */
+.marquee-track:hover,
+.marquee-track:focus-within {
+  animation-play-state: paused;
 }
 
 @keyframes marquee {

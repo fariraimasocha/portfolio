@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Outfit, DM_Serif_Display, JetBrains_Mono } from 'next/font/google'
+import { Outfit, DM_Serif_Display, JetBrains_Mono, Anton } from 'next/font/google'
 
 import { cn } from '@/lib/utils'
 
@@ -20,6 +20,12 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono'
 })
+// Condensed heavy display face — hero headline only. Anton ships a single weight.
+const anton = Anton({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-display'
+})
 
 export const metadata: Metadata = {
   title: {
@@ -27,13 +33,16 @@ export const metadata: Metadata = {
     template: '%s | fariraimasocha'
   },
   description: 'A portfolio showcasing some of my work',
-  metadataBase: new URL('https://portfolio-78f0jlqla-farirais-projects.vercel.app/'),
+  metadataBase: new URL('https://fariraimasocha.co.zw'),
   openGraph: {
+    type: 'website',
+    url: 'https://fariraimasocha.co.zw/',
+    siteName: 'fariraimasocha',
     title: 'fariraimasocha',
     description: 'A portfolio showcasing some of my work',
     images: [
       {
-        url: '/images/meta/preview.png',
+        url: 'https://fariraimasocha.co.zw/og-image.jpg',
         width: 1200,
         height: 630,
         alt: 'fariraimasocha portfolio preview'
@@ -44,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'fariraimasocha',
     description: 'A portfolio showcasing some of my work',
-    images: ['/images/meta/preview.png'],
+    images: ['https://fariraimasocha.co.zw/og-image.jpg'],
   }
 }
 
@@ -67,7 +76,8 @@ export default function RootLayout({
           'flex min-h-screen flex-col font-sans antialiased',
           outfit.variable,
           dmSerif.variable,
-          jetbrainsMono.variable
+          jetbrainsMono.variable,
+          anton.variable
         )}
       >
         <Providers>
