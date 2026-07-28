@@ -10,6 +10,9 @@
     "cssVariables": true,
     "prefix": ""
   },
+  "registries": {
+    "@icons0": "https://icons0.dev/r/{name}.json"
+  },
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",

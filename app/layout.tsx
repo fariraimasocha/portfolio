@@ -4,6 +4,8 @@ import { Outfit, DM_Serif_Display, JetBrains_Mono } from 'next/font/google'
 import { cn } from '@/lib/utils'
 
 import './globals.css'
+// Roll animation styles for <SlotText> (components/copy-email.tsx)
+import 'slot-text/style.css'
 import Providers from '@/components/providers'
 import BackButton from '@/components/back-button'
 import ThemeToggle from '@/components/theme-toggle'
