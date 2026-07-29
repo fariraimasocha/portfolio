@@ -29,11 +29,11 @@ const FEATURED_SLUGS = [
   'vercellense'
 ]
 
-// Nav pills. `archive` folds away below sm so two pills clear a 320px viewport.
+// Nav pills. `projects` folds away below sm so two pills clear a 320px viewport.
 const PILLS = [
   { href: '#work', label: 'Work' },
   { href: '#about', label: 'About' },
-  { href: '/projects', label: 'Archive', smUp: true }
+  { href: '/projects', label: 'Projects', smUp: true }
 ]
 
 const SOCIALS = [
