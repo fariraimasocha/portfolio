@@ -4,6 +4,29 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-03-25",
   "compatibility_flags": ["nodejs_compat"],
+  // Custom domain is canonical (og:image and metadataBase point at it), so the
+  // workers.dev copy stays off to avoid a duplicate indexable origin.
+  "workers_dev": false,
+  "preview_urls": true,
+  // Custom domains live here, not just in the dashboard — a deploy overrides
+  // remote config with this file, so anything missing here gets dropped.
+  "routes": [
+    {
+      "pattern": "fariraimasocha.co.zw",
+      "zone_name": "fariraimasocha.co.zw",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.fariraimasocha.co.zw",
+      "zone_name": "fariraimasocha.co.zw",
+      "custom_domain": true
+    }
+  ],
+  // CLOUDFLARE_EMAIL_TOKEN is deliberately absent — it's a secret
+  // (`wrangler secret put`), so config overrides don't clobber it.
+  "vars": {
+    "CLOUDFLARE_ACCOUNT_ID": "4b0774f7fcd2db73dbe26b3904dc632e"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
