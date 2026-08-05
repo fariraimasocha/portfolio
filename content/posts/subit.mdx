@@ -1,0 +1,73 @@
+---
+title: 'Building Subit: Making the Preview and the Export Agree'
+summary: How I built Subit, an open-source captions tool for short-form video — and why getting a browser preview and an ffmpeg-burned MP4 to draw captions in the same place turned out to be the whole problem.
+image: /images/posts/subit.png
+author: 'Farirai Masocha'
+publishedAt: '2026-08-05'
+---
+
+# Building Subit: Making the Preview and the Export Agree
+
+Short-form video is watched with the sound off. That is not a preference, it is the default state of every feed, which means the captions are doing most of the work. And they have to be burned into the pixels — no platform renders a sidecar subtitle file on autoplay.
+
+So I built [Subit](https://github.com/fariraimasocha/subit): upload a clip, Whisper transcribes it word by word, you fix the words and pick a style, and ffmpeg burns the captions in. Open source, runs on your own host.
+
+The features were the easy part. The problem that took the actual thinking was making the editor tell the truth.
+
+## Two Renderers, One Set of Captions
+
+The editor shows a live preview: a `<video>` element with a caption block drawn over it in the DOM. The export shells out to ffmpeg, which burns an ASS subtitle file into the frames with libass.
+
+Those are two completely different rendering engines. One is a browser laying out HTML with CSS. The other is a subtitle renderer built for a different era with a different box model. They have no shared code, no shared units, and no reason to agree with each other.
+
+But the whole promise of the editor is that they do. If you drag the caption block a third of the way up the frame and the burn puts it somewhere else, the preview was a lie and you find out only after a two-minute export.
+
+## Percentages, Not Pixels
+
+The first half of the fix is that neither renderer is allowed to invent a number.
+
+Every measurement in both — font size, stroke width, line spacing, vertical position — comes out of one `metrics()` call, expressed as a percentage of frame height. The DOM overlay reads it. The ASS generator reads it. Neither one computes anything on its own.
+
+That sounds obvious written down, but it is easy to get wrong incrementally: the preview picks up a `rem` here, the export gets a hardcoded pixel value there, and six weeks later they are half a caption apart and nobody knows which commit did it. Making one function the only source of numbers means drift is structurally impossible rather than something you keep fixing.
+
+Percentage-of-height also happens to solve the resolution problem for free. A 1080p clip and a 720p clip get the same caption proportions without any per-project configuration.
+
+## Anchoring on the Centre
+
+The second half is where the captions are anchored from.
+
+Both renderers anchor the caption block on its vertical centre. CSS does it with `translate(-50%, -50%)`. ASS does it with `Alignment 5`. Anchoring anywhere else — a top edge, a baseline — means the block shifts as the text wraps to a second line, and it shifts differently in each renderer.
+
+That got them close. Not identical. The burn still sat a few pixels off from the preview, consistently, and differently for each font.
+
+The reason is that the two engines disagree about where the middle of a line of text is. CSS centres text using the font's hhea metrics; libass uses the OS/2 win ascent and descent pair. Those are two different numbers baked into the same font file, and the gap between them varies by typeface.
+
+So the export subtracts a small per-font baseline correction. It is the kind of fix that looks like a magic constant when you read it, which is exactly why `src/lib/ass.test.ts` pins the numbers down — the test is there so that a future me does not "clean up" the correction and quietly break every export.
+
+## The Normalize Pass
+
+There is a third thing that has to be true before any of this works: the pixels and the caption coordinates have to be talking about the same frame.
+
+They often are not. An iPhone records landscape and writes a rotation flag into the container instead of rotating the pixels. Chrome honours the flag when it plays the file. ffmpeg does not always, and ffprobe reports the pre-rotation dimensions. So the browser thinks the video is portrait, the export thinks it is landscape, and the caption lands sideways.
+
+Every upload goes through one ffmpeg normalize pass before anything else touches it. That pass bakes the rotation into the actual pixels, re-encodes containers Chrome will not play (MOV, HEVC, ProRes), resolves the ambiguous dimensions, and caps resolution at 1920.
+
+One pass, four problems, and everything downstream gets to assume the frame it is handed is the frame that exists. That assumption is worth more than the pass costs.
+
+## Why It Is Not Serverless
+
+I default to deploying things on serverless. Subit cannot be, for two reasons that both come down to the same thing: it needs a process that outlives the request.
+
+Rendering spawns a real ffmpeg binary. In a Worker, `node:child_process` is a polyfill that throws the moment you call it. And ingest and export both run detached from the request that kicked them off — serverless freezes the function once the response is sent, which would kill every job halfway through.
+
+So the app is a plain Node process on a VPS, while storage stays on Cloudflare R2 and D1 over HTTPS. Cloudflare Containers would work too, since that is a real Docker image with a real process, as long as the base image has ffmpeg built with libass.
+
+That last requirement catches people out. Homebrew splits ffmpeg into a slim build without libass and a keg-only `ffmpeg-full` with it. Install the wrong one and everything works perfectly right up until the export, which fails because the `subtitles` filter does not exist. The setup docs open with it for that reason.
+
+## What I Left Rough
+
+Jobs live in an in-memory Map. Restart the server mid-export and the job vanishes — the UI notices and offers a retry, which is the honest version of the shortcut. Doing it properly means a jobs table and a reaper process, and at that point I have written a queue for a tool that runs one export at a time.
+
+The other known gap is the aspect ratio selector. Picking 9:16 or 1:1 crops the preview but not the export, which always keeps the source frame. So on anything other than Source, the same position percentage lands somewhere different. That one is a real bug rather than a deliberate simplification, and it is next.
+
+Everything else does what the README says. The code, the setup guide and the design notes are at [github.com/fariraimasocha/subit](https://github.com/fariraimasocha/subit).

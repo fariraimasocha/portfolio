@@ -26,7 +26,8 @@ const FEATURED_SLUGS = [
   'domainflex',
   'e-waitfast',
   'f-10x',
-  'vercellense'
+  'vercellense',
+  'subit'
 ]
 
 // Nav pills. `projects` folds away below sm so two pills clear a 320px viewport.

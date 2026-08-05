@@ -1,0 +1,55 @@
+---
+title: Subit
+summary: An open-source captions tool for short-form video — upload a clip, Whisper transcribes it word by word, you fix the words and pick a style, and ffmpeg burns the captions into the pixels.
+image: /images/projects/subit.png
+author: 'Farirai Masocha'
+publishedAt: '2026-08-05'
+---
+
+# Subit: Captions That Stop the Scroll
+
+[Subit](https://github.com/fariraimasocha/subit) burns word-by-word captions into short-form video. Drop in a clip, let Whisper transcribe it, fix any misheard words, pick a caption style, and export an MP4 with the captions baked into the pixels.
+
+The editor preview and the exported file share one positioning formula, so what you see is what gets burned.
+
+## The Problem
+
+Short-form video is watched muted. Captions are not an accessibility nice-to-have there, they are the difference between someone stopping and someone scrolling past. And a sidecar `.srt` file does not help, because none of the platforms that matter will render one on autoplay. The words have to be in the pixels.
+
+The tools that do this well are subscriptions, and the ones that are free are usually a manual timing exercise. Subit is neither: it is open source, it runs on your own host, and the timing comes from word-level Whisper timestamps rather than from you dragging cues around.
+
+## How It Works
+
+1. **Upload** — The browser gets a presigned PUT and sends the file straight to Cloudflare R2. The app server never receives the bytes.
+2. **Normalize** — One ffmpeg pass fixes containers Chrome will not play, bakes iPhone rotation metadata into the pixels, resolves ambiguous dimensions, and caps resolution at 1920.
+3. **Transcribe** — Audio goes out as 16 kHz mono FLAC to Groq's `whisper-large-v3-turbo`, which returns word-level timestamps.
+4. **Edit** — Transcript on the left, live preview in the middle, caption styles on the right. Fix a word, pick a preset, drag the caption block where you want it.
+5. **Export** — Cues become an ASS subtitle file, ffmpeg burns it in with libass, and the finished MP4 goes back to R2.
+
+## Key Features
+
+### Word-Level Timing
+
+Whisper returns a timestamp per word, so captions land on the beat instead of appearing a sentence at a time. That is the pacing that reads as native on short-form platforms.
+
+### Caption Presets
+
+Five styles ship out of the box — Hormozi, Beast, Sunset, Kendrick and Marker — each a complete look rather than a set of knobs. Pick one and the whole caption block changes.
+
+### Drag-to-Position
+
+The caption block moves anywhere in the frame. Position is stored as a percentage of frame height, not as pixels, so it survives whatever resolution the source clip happens to be.
+
+### What You See Is What Gets Burned
+
+Two renderers draw the same captions: a DOM overlay in the browser and an ASS subtitle file burned by libass. Every number in both comes from a single shared metrics function, so the preview is a promise the export keeps.
+
+### Image Overlays
+
+Drop images onto the timeline alongside the captions and they render into the export the same way.
+
+### Self-Hosted
+
+Storage is Cloudflare R2 and D1, but the app itself is a plain Node process — rendering shells out to a real ffmpeg binary, and jobs run detached from the request that started them. That means a VPS, Fly, Render or Railway rather than serverless, and it means the whole thing is yours.
+
+Subit is open source and free to run. The code, the setup guide and the design notes are all at [github.com/fariraimasocha/subit](https://github.com/fariraimasocha/subit).
