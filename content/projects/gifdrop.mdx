@@ -1,0 +1,47 @@
+---
+title: gifdrop
+summary: Paste an X, GIPHY, TikTok or Instagram link and get a real looping GIF you can send to WhatsApp as an animated sticker. Converted in your browser, no sign-up, no watermark.
+image: /images/projects/gifdrop.png
+author: 'Farirai Masocha'
+publishedAt: '2026-11-18'
+---
+
+# gifdrop: Any GIF or Clip, Into a WhatsApp Sticker
+
+[gifdrop](https://gifdrop.xyz/) turns a link into a WhatsApp sticker. Paste an X post or a GIPHY link, or drop in a `.gif` or `.mp4`, and it hands you back a looping GIF that lands in WhatsApp ready to send.
+
+## The Problem
+
+The best reaction clips live on X, and X does not actually serve GIFs. What looks like a GIF is an MP4, so saving it gives you a video, and a video will not become a sticker. Getting from "that clip is perfect" to "it's in the group chat" meant a converter site, a download, a re-upload and usually a watermark.
+
+## How It Works
+
+1. **Paste a link** — X, GIPHY, TikTok or Instagram, or drop a file straight in.
+2. **Fetch** — A Cloudflare Worker resolves the link to its media file and proxies it.
+3. **Convert** — The MP4 becomes a real looping `.gif` in the browser with ffmpeg.wasm. Nothing is stored on a server.
+4. **Trim** — A filmstrip trimmer with drag handles keeps just the bit you want.
+5. **Send** — On a phone, the share sheet opens and the GIF goes to WhatsApp. Press and hold it, copy, paste, send, and it goes as an animated sticker.
+
+## Key Features
+
+### Converted On Your Device
+
+The roughly 30 MB ffmpeg core only loads when a clip actually needs converting. After that, everything happens in the tab.
+
+### Locked-Down Fetching
+
+The media endpoint only fetches from an allowlist of media hosts (twimg, GIPHY, Tenor, imgur, and the TikTok and Instagram CDNs). It caps files at 25 MB, accepts GIF and MP4 only, and rate-limits each IP to 20 requests a minute using the Workers rate-limit binding.
+
+### My Stickers
+
+Finished stickers are saved locally and show up as a floating board, so the good ones are always one tap away.
+
+### Free Video Downloaders
+
+The same pipeline powers free downloaders for X, TikTok and Instagram. They list every available quality with its real file size, and stream the file you pick.
+
+## Stack
+
+TanStack Start on Cloudflare Workers, Tailwind v4 with shadcn/ui, zustand, react-hook-form with zod, and ffmpeg.wasm.
+
+gifdrop is free with no sign-up. Try it at [gifdrop.xyz](https://gifdrop.xyz/). The code is at [github.com/fariraimasocha/gifdrop](https://github.com/fariraimasocha/gifdrop).

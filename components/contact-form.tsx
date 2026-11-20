@@ -1,161 +1,139 @@
 'use client'
 
-import { z } from 'zod'
+import { useState } from 'react'
 import Link from 'next/link'
-import { toast } from 'sonner'
+import { z } from 'zod'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+
 import { ContactFormSchema } from '@/lib/schemas'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { sendEmail } from '@/lib/actions'
+import { pill } from '@/components/rows'
 
 type Inputs = z.infer<typeof ContactFormSchema>
 
+// Fallback when sending fails. Already public on the old site.
+const EMAIL = 'fariraimasocha@gmail.com'
+
+const field =
+  'w-full border-b border-foreground/30 bg-transparent py-3 text-lg outline-none transition-colors placeholder:text-muted-foreground focus:border-[hsl(var(--ink-accent))] aria-[invalid=true]:border-destructive'
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null
+  return <p className='mt-2 font-mono text-xs text-destructive'>{message}</p>
+}
+
 export default function ContactForm() {
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors, isSubmitting }
-    } = useForm<Inputs>({
-        resolver: zodResolver(ContactFormSchema),
-        defaultValues: {
-            name: '',
-            email: '',
-            message: ''
-        }
-    })
+  const [sentTo, setSentTo] = useState<string | null>(null)
+  const [failed, setFailed] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting }
+  } = useForm<Inputs>({
+    resolver: zodResolver(ContactFormSchema),
+    defaultValues: { name: '', email: '', message: '' }
+  })
 
-    const processForm: SubmitHandler<Inputs> = async (data) => {
-        try {
-            const result = await sendEmail(data)
-            
-            if (result.error) {
-                toast.error(result.error)
-                return
-            }
-            
-            toast.success('Message sent successfully!')
-            reset()
-        } catch (error) {
-            console.error('Unexpected error:', error)
-            toast.error('Something went wrong. Please try again.')
-        }
+  const processForm: SubmitHandler<Inputs> = async data => {
+    setFailed(false)
+    try {
+      const result = await sendEmail(data)
+      if (result.error) return setFailed(true)
+      setSentTo(data.email)
+      reset()
+    } catch {
+      setFailed(true)
     }
+  }
 
+  // Success stays on screen: what happened, and where to go next.
+  if (sentTo) {
     return (
-        <section className='relative isolate'>
-            {/* Background pattern */}
-            <svg
-                className='absolute inset-0 -z-10 h-full w-full stroke-zinc-200 opacity-75 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:stroke-zinc-700'
-                aria-hidden='true'
-            >
-                <defs>
-                    <pattern
-                        id='83fd4e5a-9d52-42fc-97b6-718e5d7ee527'
-                        width={200}
-                        height={200}
-                        x='50%'
-                        y={-64}
-                        patternUnits='userSpaceOnUse'
-                    >
-                        <path d='M100 200V.5M.5 .5H200' fill='none' />
-                    </pattern>
-                </defs>
-                <svg
-                    x='50%'
-                    y={-64}
-                    className='overflow-visible fill-zinc-50 dark:fill-zinc-900/75'
-                >
-                    <path
-                        d='M-100.5 0h201v201h-201Z M699.5 0h201v201h-201Z M499.5 400h201v201h-201Z M299.5 800h201v201h-201Z'
-                        strokeWidth={0}
-                    />
-                </svg>
-                <rect
-                    width='100%'
-                    height='100%'
-                    strokeWidth={0}
-                    fill='url(#83fd4e5a-9d52-42fc-97b6-718e5d7ee527)'
-                />
-            </svg>
-
-            {/* Form */}
-            <div className='relative'>
-                <form
-                    onSubmit={handleSubmit(processForm)}
-                    className='mt-16 lg:flex-auto'
-                    noValidate
-                >
-                    <div className='grid grid-cols-1 gap-6 sm:grid-cols-2'>
-                        {/* Name */}
-                        <div>
-                            <Input
-                                id='name'
-                                type='text'
-                                placeholder='Name'
-                                autoComplete='given-name'
-                                {...register('name')}
-                            />
-
-                            {errors.name?.message && (
-                                <p className='ml-1 mt-2 text-sm text-rose-400'>
-                                    {errors.name.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Email */}
-                        <div>
-                            <Input
-                                type='email'
-                                id='email'
-                                autoComplete='email'
-                                placeholder='Email'
-                                {...register('email')}
-                            />
-
-                            {errors.email?.message && (
-                                <p className='ml-1 mt-2 text-sm text-rose-400'>
-                                    {errors.email.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Message */}
-                        <div className='sm:col-span-2'>
-                            <Textarea
-                                rows={4}
-                                placeholder='Message'
-                                {...register('message')}
-                            />
-
-                            {errors.message?.message && (
-                                <p className='ml-1 mt-2 text-sm text-rose-400'>
-                                    {errors.message.message}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                    <div className='mt-6'>
-                        <Button
-                            type='submit'
-                            disabled={isSubmitting}
-                            className='w-full'
-                        >
-                            {isSubmitting ? 'Submitting...' : 'Contact Us'}
-                        </Button>
-                    </div>
-                    <p className='mt-4 text-xs text-muted-foreground'>
-                        By submitting this form, I agree to the{' '}
-                        <Link href='/privacy' className='font-bold'>
-                            privacy&nbsp;policy.
-                        </Link>
-                    </p>
-                </form>
-            </div>
-        </section>
+      <div role='status' className='hairline mt-12 pt-10'>
+        <p className='font-mono text-sm text-[hsl(var(--ink-accent))]'>✓ message sent</p>
+        <p className='mt-3 max-w-xl text-pretty text-xl'>
+          Thanks. A confirmation is on its way to{' '}
+          <span className='font-semibold'>{sentTo}</span>, and I&rsquo;ll reply there.
+        </p>
+        <div className='mt-8 flex flex-wrap gap-2'>
+          <Link href='/#work' className={pill}>
+            Back to my work
+          </Link>
+          <button type='button' onClick={() => setSentTo(null)} className={pill}>
+            Send another
+          </button>
+        </div>
+      </div>
     )
+  }
+
+  return (
+    <form onSubmit={handleSubmit(processForm)} noValidate className='mt-12 grid gap-8'>
+      <div className='grid gap-8 sm:grid-cols-2'>
+        <label>
+          <span className='sr-only'>Name</span>
+          <input
+            type='text'
+            placeholder='Name'
+            autoComplete='name'
+            aria-invalid={!!errors.name}
+            className={field}
+            {...register('name')}
+          />
+          <FieldError message={errors.name?.message} />
+        </label>
+        <label>
+          <span className='sr-only'>Email</span>
+          <input
+            type='email'
+            placeholder='Email'
+            autoComplete='email'
+            aria-invalid={!!errors.email}
+            className={field}
+            {...register('email')}
+          />
+          <FieldError message={errors.email?.message} />
+        </label>
+      </div>
+      <label>
+        <span className='sr-only'>Message</span>
+        <textarea
+          rows={5}
+          placeholder='What are you building?'
+          aria-invalid={!!errors.message}
+          className={`${field} resize-y`}
+          {...register('message')}
+        />
+        <FieldError message={errors.message?.message} />
+      </label>
+
+      {/* Failure: what went wrong, the work is safe, and another way through */}
+      {failed && (
+        <p role='alert' className='border-l-2 border-destructive pl-4 text-base'>
+          That didn&rsquo;t send. Your message is still here, so you can try again, or email
+          me directly at{' '}
+          <a
+            href={`mailto:${EMAIL}`}
+            className='font-semibold underline decoration-[hsl(var(--ink-accent))] underline-offset-4'
+          >
+            {EMAIL}
+          </a>
+          .
+        </p>
+      )}
+
+      <div>
+        <button
+          type='submit'
+          disabled={isSubmitting}
+          className={`${pill} disabled:cursor-wait disabled:opacity-60`}
+        >
+          {isSubmitting ? 'Sending…' : failed ? 'Try again' : 'Send message'}{' '}
+          <span aria-hidden='true'>→</span>
+        </button>
+      </div>
+    </form>
+  )
 }

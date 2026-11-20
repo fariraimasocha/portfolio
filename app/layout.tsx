@@ -1,36 +1,21 @@
 import type { Metadata } from 'next'
-import { Outfit, DM_Serif_Display, JetBrains_Mono, Anton } from 'next/font/google'
+import { Space_Grotesk, JetBrains_Mono } from 'next/font/google'
 
 import { cn } from '@/lib/utils'
 
 import './globals.css'
-// Roll animation styles for <SlotText> (components/copy-email.tsx)
-import 'slot-text/style.css'
 import Providers from '@/components/providers'
 import BackButton from '@/components/back-button'
 import ThemeToggle from '@/components/theme-toggle'
+import Cursor from '@/components/cursor'
 
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' })
-const dmSerif = DM_Serif_Display({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-serif'
-})
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono'
-})
-// Condensed heavy display face — hero headline only. Anton ships a single weight.
-const anton = Anton({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-display'
-})
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-sans' })
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
 export const metadata: Metadata = {
   title: {
-    default: 'fariraimasocha',
-    template: '%s | fariraimasocha'
+    default: 'farirai',
+    template: '%s | farirai'
   },
   description: 'A portfolio showcasing some of my work',
   metadataBase: new URL('https://fariraimasocha.co.zw'),
@@ -42,7 +27,7 @@ export const metadata: Metadata = {
     description: 'A portfolio showcasing some of my work',
     images: [
       {
-        url: 'https://fariraimasocha.co.zw/og-image.jpg',
+        url: 'https://fariraimasocha.co.zw/og-image.jpg?v=2',
         width: 1200,
         height: 630,
         alt: 'fariraimasocha portfolio preview'
@@ -53,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'fariraimasocha',
     description: 'A portfolio showcasing some of my work',
-    images: ['https://fariraimasocha.co.zw/og-image.jpg'],
+    images: ['https://fariraimasocha.co.zw/og-image.jpg?v=2'],
   }
 }
 
@@ -74,15 +59,15 @@ export default function RootLayout({
       <body
         className={cn(
           'flex min-h-screen flex-col font-sans antialiased',
-          outfit.variable,
-          dmSerif.variable,
-          jetbrainsMono.variable,
-          anton.variable
+          spaceGrotesk.variable,
+          jetbrainsMono.variable
         )}
       >
         <Providers>
-<BackButton />
+          <div className='scroll-progress' aria-hidden='true' />
+          <BackButton />
           <ThemeToggle />
+          <Cursor />
           <main className='grow'>{children}</main>
         </Providers>
       </body>

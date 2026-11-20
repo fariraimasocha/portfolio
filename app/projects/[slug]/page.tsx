@@ -1,58 +1,26 @@
-import Image from 'next/image'
-
-import { formatDate } from '@/lib/utils'
-import MDXContent from '@/components/mdx-content'
-import { getProjectBySlug, getProjects } from '@/lib/projects'
 import { notFound } from 'next/navigation'
+
+import Article from '@/components/article'
+import { getProjectBySlug, getProjects } from '@/lib/projects'
 
 export async function generateStaticParams() {
   const projects = await getProjects()
-  const slugs = projects.map(project => ({ slug: project.slug }))
-
-  return slugs
+  return projects.map(project => ({ slug: project.slug }))
 }
 
-export default async function Project({
-  params
-}: {
-  params: Promise<{ slug: string }>
-}) {
-  const { slug } = await params
-  const project = await getProjectBySlug(slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const project = await getProjectBySlug((await params).slug)
+  return { title: project?.metadata.title, description: project?.metadata.summary }
+}
 
-  if (!project) {
-    notFound()
-  }
+export default async function Project({ params }: { params: Promise<{ slug: string }> }) {
+  const project = await getProjectBySlug((await params).slug)
+  if (!project) notFound()
 
-  const { metadata, content } = project
-  const { title, image, author, publishedAt } = metadata
+  const all = await getProjects()
+  const i = all.findIndex(p => p.slug === project.metadata.slug)
+  const after = all.length > 1 ? all[(i + 1) % all.length] : undefined
+  const next = after && { href: `/projects/${after.slug}`, title: after.title }
 
-  return (
-    <section className='py-24'>
-      <div className='container max-w-3xl'>
-        {image && (
-          <div className='relative mb-6 aspect-video w-full overflow-hidden rounded-lg ring-1 ring-black/5 dark:ring-white/5'>
-            <Image
-              src={image}
-              alt={title || ''}
-              className='object-contain object-top'
-              fill
-              sizes='(min-width: 768px) 768px, 100vw'
-            />
-          </div>
-        )}
-
-        <header>
-          <h1 className='title'>{title}</h1>
-          <p className='mt-3 text-xs tabular-nums text-muted-foreground'>
-            {author} / {formatDate(publishedAt ?? '')}
-          </p>
-        </header>
-
-        <main className='prose mt-16 dark:prose-invert'>
-          <MDXContent source={content} />
-        </main>
-      </div>
-    </section>
-  )
+  return <Article kind='project' {...project.metadata} content={project.content} next={next} />
 }

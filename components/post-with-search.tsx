@@ -1,48 +1,45 @@
 'use client'
 
 import { useState } from 'react'
+
+import { PostRows } from '@/components/rows'
 import { PostMetadata } from '@/lib/posts'
 
-import Posts from '@/components/posts'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Cross2Icon } from '@radix-ui/react-icons'
-
 export default function PostsWithSearch({ posts }: { posts: PostMetadata[] }) {
-    const [query, setQuery] = useState('')
-    const filtered = posts.filter(post =>
-        post.title?.toLowerCase().includes(query.toLowerCase())
-    )
+  const [query, setQuery] = useState('')
+  const filtered = posts.filter(post =>
+    post.title?.toLowerCase().includes(query.trim().toLowerCase())
+  )
 
-    const isFiltered = query.length > 0
-    function resetFilter() {
-        setQuery('')
-    }
+  return (
+    <div>
+      {/* Terminal-prompt search */}
+      <label className='mt-10 flex max-w-md items-center gap-3 border-b border-foreground/30 pb-2 font-mono text-sm transition-colors focus-within:border-[hsl(var(--ink-accent))]'>
+        <span className='shrink-0 whitespace-nowrap text-[hsl(var(--ink-accent))]'>$ grep</span>
+        <input
+          type='search'
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder='search posts…'
+          aria-label='Search posts'
+          className='w-full bg-transparent outline-none placeholder:text-muted-foreground'
+        />
+      </label>
 
-    return (
-        <div>
-            <div className='mb-12 flex items-center gap-3'>
-                <Input
-                    type='text'
-                    placeholder='Search posts...'
-                    className='h-9 w-full sm:w-1/2'
-                    value={query}
-                    onChange={e => setQuery(e.target.value)}
-                />
-                {isFiltered && (
-                    <Button
-                        size='sm'
-                        variant='secondary'
-                        onClick={resetFilter}
-                        className='h-8 px-2 lg:px-3'
-                    >
-                        Reset
-                        <Cross2Icon className='ml-2 h-4 w-4' />
-                    </Button>
-                )}
-            </div>
-
-            <Posts posts={filtered} />
-        </div>
-    )
+      {filtered.length > 0 ? (
+        <PostRows posts={filtered} />
+      ) : (
+        <p className='mt-10 font-mono text-sm text-muted-foreground'>
+          no matches for &ldquo;{query}&rdquo;.{' '}
+          <button
+            type='button'
+            onClick={() => setQuery('')}
+            className='text-foreground underline decoration-[hsl(var(--ink-accent))] underline-offset-4 hover:no-underline'
+          >
+            clear search
+          </button>
+        </p>
+      )}
+    </div>
+  )
 }
