@@ -36,10 +36,7 @@ export default async function Home() {
       {/* ----------------------------------------------------------- hello */}
       <section className='grid min-h-[min(80svh,42rem)] items-center gap-10 pb-10 pt-28 md:grid-cols-[1.2fr_1fr]'>
         <div className='[container-type:inline-size]'>
-          <p className='font-mono text-sm text-muted-foreground'>
-            <span className='text-[hsl(var(--ink-accent))]'>~/harare</span> $ whoami
-          </p>
-          <h1 className='mt-4 text-[2.75rem] font-bold leading-[1.02] tracking-[-0.03em] md:text-[min(3.75rem,12.4cqw)]'>
+          <h1 className='text-[2.75rem] font-bold leading-[1.02] tracking-[-0.03em] md:text-[min(3.75rem,12.4cqw)]'>
             Hi, I&rsquo;m Fari.
           </h1>
           <p className='mt-6 max-w-xl text-pretty text-xl text-muted-foreground'>
