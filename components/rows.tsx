@@ -61,9 +61,9 @@ export function ProjectRows({ projects }: { projects: ProjectMetadata[] }) {
   return (
     <ul className='hairline-end relative mt-10'>
       {projects.map(project => (
-        <li key={project.slug} className='hairline'>
+        <li key={project.slug} data-project-slug={project.slug} className='hairline'>
           <Link href={`/projects/${project.slug}`} className={row}>
-            <span className='text-[clamp(1.2rem,1rem+0.8vw,1.4rem)] font-semibold leading-8 tracking-tight'>
+            <span data-project-title className='justify-self-start text-[clamp(1.2rem,1rem+0.8vw,1.4rem)] font-semibold leading-8 tracking-tight'>
               {project.title}
             </span>
             <span className='col-start-1 row-start-2 pb-1 text-base leading-snug text-muted-foreground sm:col-start-auto sm:row-start-auto'>

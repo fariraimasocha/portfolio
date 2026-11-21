@@ -124,6 +124,10 @@
     @apply bg-background text-foreground;
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading), var(--font-sans), sans-serif;
+  }
+
   .title {
     @apply font-mono text-2xl font-normal tracking-tight text-balance;
   }
@@ -430,6 +434,19 @@ body {
   background: hsl(var(--ink-accent));
   transform: scaleY(0);
   transform-origin: top;
+}
+
+.trace-signature-cursor {
+  opacity: 0;
+}
+
+.trace-signature-cursor[data-trace-finished] {
+  opacity: 1;
+  animation: trace-cursor-blink 0.8s steps(1, end) 3;
+}
+
+@keyframes trace-cursor-blink {
+  50% { opacity: 0; }
 }
 
 @keyframes draw-x {

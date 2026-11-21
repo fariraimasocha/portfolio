@@ -53,6 +53,7 @@ export default function ThemeToggle() {
 
     return (
         <Button
+            data-trace-theme-toggle
             size='sm'
             variant='ghost'
             onClick={toggle}

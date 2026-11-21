@@ -1,5 +1,8 @@
 import Link from 'next/link'
-import { Terminal } from '@lucasmarkes/hairline/react'
+
+import DeveloperPortrait from '@/components/developer-portrait'
+
+import HomeTrace from '@/components/home-trace'
 
 import { getProjects } from '@/lib/projects'
 import { getPosts } from '@/lib/posts'
@@ -29,14 +32,14 @@ export default async function Home() {
   )
 
   return (
-    <div className='mx-auto max-w-5xl px-[clamp(1.25rem,4vw,3rem)] text-lg leading-normal'>
+    <HomeTrace>
       {/* ----------------------------------------------------------- hello */}
       <section className='grid min-h-[min(80svh,42rem)] items-center gap-10 pb-10 pt-28 md:grid-cols-[1.2fr_1fr]'>
-        <div>
+        <div className='[container-type:inline-size]'>
           <p className='font-mono text-sm text-muted-foreground'>
             <span className='text-[hsl(var(--ink-accent))]'>~/harare</span> $ whoami
           </p>
-          <h1 className='mt-4 text-[clamp(2.75rem,1.6rem+3.6vw,4.5rem)] font-semibold leading-[1.02] tracking-[-0.03em]'>
+          <h1 className='mt-4 text-[2.75rem] font-bold leading-[1.02] tracking-[-0.03em] md:text-[min(3.75rem,12.4cqw)]'>
             Hi, I&rsquo;m Fari.
           </h1>
           <p className='mt-6 max-w-xl text-pretty text-xl text-muted-foreground'>
@@ -61,13 +64,7 @@ export default async function Home() {
             </Link>
           </div>
         </div>
-        {/* Hairline figure: lines lift as the pointer moves over it */}
-        <Terminal
-          play
-          intensity={0.6}
-          label='A terminal window whose history lifts under the pointer'
-          className='mx-auto w-full max-w-sm text-foreground md:max-w-none'
-        />
+        <DeveloperPortrait />
       </section>
 
       {/* ------------------------------------------------------------ work */}
@@ -94,7 +91,7 @@ export default async function Home() {
       )}
 
       {/* ---------------------------------------------------------- say hi */}
-      <section className='hairline py-24 text-center'>
+      <section className='hairline pb-36 pt-24 text-center motion-reduce:pb-24'>
         <div className='flex justify-center'>
           <SectionTitle index='03 contact'>Say hi</SectionTitle>
         </div>
@@ -113,6 +110,6 @@ export default async function Home() {
           </li>
         </ul>
       </section>
-    </div>
+    </HomeTrace>
   )
 }

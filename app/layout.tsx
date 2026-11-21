@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk, JetBrains_Mono } from 'next/font/google'
+import { JetBrains_Mono, Space_Grotesk, Winky_Sans } from 'next/font/google'
 
 import { cn } from '@/lib/utils'
 
@@ -10,6 +10,7 @@ import ThemeToggle from '@/components/theme-toggle'
 import Cursor from '@/components/cursor'
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-sans' })
+const winkySans = Winky_Sans({ subsets: ['latin'], variable: '--font-heading' })
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
     description: 'A portfolio showcasing some of my work',
     images: [
       {
-        url: 'https://fariraimasocha.co.zw/og-image.jpg?v=3',
+        url: 'https://fariraimasocha.co.zw/og-image.jpg?v=4',
         width: 1200,
         height: 630,
         alt: 'fariraimasocha portfolio preview'
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'fariraimasocha',
     description: 'A portfolio showcasing some of my work',
-    images: ['https://fariraimasocha.co.zw/og-image.jpg?v=3'],
+    images: ['https://fariraimasocha.co.zw/og-image.jpg?v=4'],
   }
 }
 
@@ -60,6 +61,7 @@ export default function RootLayout({
         className={cn(
           'flex min-h-screen flex-col font-sans antialiased',
           spaceGrotesk.variable,
+          winkySans.variable,
           jetbrainsMono.variable
         )}
       >
