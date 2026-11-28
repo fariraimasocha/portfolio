@@ -56,6 +56,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
         <link rel="manifest" href="/favicon/site.webmanifest" />
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
+        <script defer data-website-id="156k1h0g6l130b1q" src="https://open-analytics.farirai.workers.dev/js/script.js"></script>
       </head>
       <body
         className={cn(
